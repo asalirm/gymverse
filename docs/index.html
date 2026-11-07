@@ -61,7 +61,7 @@ input,select,textarea{font:inherit;color:var(--text-primary)}
 /* brand bar */
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--background);padding-block:12px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--border)}
 .brand{display:flex;align-items:center;gap:10px}
-.brand svg{width:34px;height:34px;border-radius:9px;display:block}
+.brand svg{width:34px;height:34px;display:block}
 .brand h1{font-size:21px;font-weight:700;letter-spacing:.3px}
 .brand small{display:block;font-size:10px;letter-spacing:2.5px;color:var(--text-secondary);font-weight:600;line-height:1}
 .sync{font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px}
@@ -1108,11 +1108,11 @@ async function applyProgram(key) {
 const WD = ["ح", "ن", "ث", "ر", "خ", "ج", "س"]; // JS getDay order: Sunday..Saturday
 const WD_FULL = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
 const SAT_FIRST = [6, 0, 1, 2, 3, 4, 5];
-const LOGO = '<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="#173F35"/><g transform="translate(32 32) scale(.82) translate(-34 -34)">' +
-  '<path d="M22 13H42L51 22V42L42 51H22L13 42V22Z" fill="none" stroke="#E9E2D6" stroke-width="5.2" stroke-linejoin="miter" stroke-miterlimit="10"/>' +
-  '<rect x="19.5" y="24.5" width="4.6" height="15" fill="#E9E2D6"/><rect x="25.4" y="27.5" width="3.2" height="9" fill="#E9E2D6"/><rect x="28.6" y="30.6" width="6.8" height="2.8" fill="#E9E2D6"/>' +
-  '<rect x="35.4" y="27.5" width="3.2" height="9" fill="#E9E2D6"/><rect x="39.9" y="24.5" width="4.6" height="15" fill="#E9E2D6"/>' +
-  '<path d="M43.2 43.2L55.5 55.5" stroke="#E9E2D6" stroke-width="5.2" stroke-linecap="square"/></g></svg>';
+const LOGO = '<svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#173F35"/><g fill="#E9E2D6">' +
+  '<polygon points="78,211 112,211 112,301 78,301"/><polygon points="119,181 155,181 155,331 119,331"/>' +
+  '<polygon points="357,181 393,181 393,331 357,331"/><polygon points="400,211 434,211 434,301 400,301"/>' +
+  '<polygon points="171,221 225,167 306,167 341,202 341,267 305,267 305,216 291,202 240,202 207,235 207,260 171,296"/>' +
+  '<polygon points="207,267 267,267 337,337 276,337"/></g></svg>';
 const sessVol = s => (s.entries || []).reduce((a, en) => a + en.sets.reduce((b, x) => b + x.w * x.r, 0), 0);
 const sessSets = s => (s.entries || []).reduce((a, e) => a + e.sets.length, 0);
 const kfmt = v => (v >= 10000 ? fmt(v / 1000) + "k" : String(Math.round(v)));
