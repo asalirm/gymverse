@@ -376,6 +376,11 @@ async function boot() {
   if (db) {
     S.db = db; S.mode = "db"; subscribe();
     window.claude.use("assets").then(a => { S.assets = a; maybeMigrate(); if (S.view === "plan") softRender(); }).catch(() => {});
+    db.doc("state/active").get().then(sn => {
+      const d = sn.exists ? sn.data() : null;
+      if (d && d.a && d.a.day && (d.a.updatedAt || 0) > ((S.active && S.active.updatedAt) || 0)) { S.active = d.a; lsSet("gv.active", S.active); softRender(); }
+      else if (S.active && !d) pushActive();
+    }).catch(() => {});
     db.doc("chat/main").get().then(sn => { if (sn.exists && Array.isArray(sn.data().msgs) && !S.chat.length) { S.chat = sn.data().msgs.slice(-40); if (S.view === "coach") render(); } }).catch(() => {});
   } else {
     S.mode = "local"; S.plan = lsGet("gv.plan"); S.sessions = lsGet("gv.sessions") || []; S.chat = lsGet("gv.chat") || []; S.ready = true; render();
@@ -392,8 +397,8 @@ function subscribe() {
   const settle = () => {
     if (!(gotPlan && gotSess)) return;
     clearTimeout(timer); S.ready = true; S.note = "";
-    if (!S.dirty) S.draft = null;
-    render();
+    if (!S.dirty && !(document.activeElement && document.activeElement.dataset && document.activeElement.dataset.pf)) S.draft = null;
+    softRender();
   };
   const onErr = () => { clearTimeout(timer); S.note = "انقطع الاتصال بالبيانات. افتح الصفحة من جديد بعد شوي."; S.ready = true; render(); };
   S.db.doc("gym/plan").onSnapshot(snap => { S.plan = snap.exists ? snap.data() : null; gotPlan = true; settle(); }, onErr);
@@ -880,7 +885,7 @@ function render() {
     '<nav class="nav" aria-label="التنقل"><div class="nav-in">' +
       navBtn("today", S.active ? "التمرين الحالي" : "اليوم", ICON.today) + navBtn("prog", "التطور", ICON.prog) + navBtn("coach", "المدرب", ICON.coach) + navBtn("plan", "الخطة", ICON.plan) +
     "</div></nav>" +
-    (S.view === "plan" && S.ready ? '<div class="savebar" id="savebar"' + (S.dirty ? "" : " hidden") + '><span>عندك تعديلات ما انحفظت</span><button class="btn sm" data-act="revert">تراجع</button><button class="btn primary sm" data-act="savePlan">احفظ الخطة</button></div>' : "") +
+    (S.view === "plan" && S.ready ? '<div class="savebar" id="savebar"' + (S.dirty ? "" : " hidden") + '><span>بتنحفظ تلقائياً… أكمل اسم أي تمرين فاضي</span><button class="btn sm" data-act="revert">تراجع</button><button class="btn primary sm" data-act="savePlan">احفظ الخطة</button></div>' : "") +
     '<div id="restbox"></div>';
   renderRest(); renderOverlay();
   window.scrollTo(0, keepY);
@@ -1149,7 +1154,17 @@ setInterval(() => {
 }, 250);
 
 /* ---------- actions ---------- */
-const saveActive = () => lsSet("gv.active", S.active);
+let activeT = 0;
+function saveActive() {
+  if (S.active) S.active.updatedAt = Date.now();
+  lsSet("gv.active", S.active);
+  if (S.mode === "db") { clearTimeout(activeT); activeT = setTimeout(pushActive, 600); }
+}
+async function pushActive() {
+  clearTimeout(activeT);
+  if (S.mode !== "db" || !S.db) return;
+  try { if (S.active) await S.db.doc("state/active").set({ a: S.active }); else await S.db.doc("state/active").delete(); } catch (e) {}
+}
 function startWorkout(dayId) {
   const day = S.plan.days.find(d => d.id === dayId); if (!day) return;
   const log = {}, prev = {};
@@ -1238,7 +1253,20 @@ function validDraft(D) {
   return "";
 }
 const newEx = () => ({ id: "x" + uid(), name: "", sets: 3, min: 10, max: 12, inc: 5 });
-function markDirty() { S.dirty = true; const sb = document.getElementById("savebar"); if (sb) sb.hidden = false; }
+let planT = 0;
+function markDirty() { S.dirty = true; const sb = document.getElementById("savebar"); if (sb) sb.hidden = false; clearTimeout(planT); planT = setTimeout(autoSavePlan, 1200); }
+async function autoSavePlan() {
+  clearTimeout(planT);
+  if (!S.dirty || !S.draft || validDraft(S.draft)) return;
+  try {
+    await putPlan(S.draft); S.dirty = false;
+    const sb = document.getElementById("savebar"); if (sb) sb.hidden = true;
+    toast("انحفظت الخطة");
+  } catch (e) { writeErr(e); }
+}
+function flushAll() { pushActive(); if (S.dirty) autoSavePlan(); }
+addEventListener("pagehide", flushAll);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushAll(); });
 
 app.addEventListener("input", e => {
   const t = e.target;
@@ -1327,17 +1355,17 @@ document.addEventListener("click", async e => {
       render(); break;
     }
     case "revert": S.draft = null; S.dirty = false; render(); break;
-    case "addDay": D.days.push({ id: "d" + uid(), name: "يوم " + (D.days.length + 1), groups: [{ id: "g" + uid(), ex: [newEx(), newEx()] }] }); S.dirty = true; render(); break;
-    case "delDay": if (prevArmed === "day:" + d) { D.days.splice(d, 1); S.dirty = true; } else S.armed = "day:" + d; render(); break;
-    case "addSS": D.days[d].groups.push({ id: "g" + uid(), ex: [newEx(), newEx()] }); S.dirty = true; render(); break;
-    case "addEx": D.days[d].groups.push({ id: "g" + uid(), ex: [newEx()] }); S.dirty = true; render(); break;
-    case "addToG": D.days[d].groups[g].ex.push(newEx()); S.dirty = true; render(); break;
-    case "mvG": { const gs = D.days[d].groups, j = g + +b.dataset.dir; if (j >= 0 && j < gs.length) { [gs[g], gs[j]] = [gs[j], gs[g]]; S.dirty = true; } render(); break; }
-    case "link": { const gs = D.days[d].groups; if (gs[g + 1]) { gs[g].ex = gs[g].ex.concat(gs[g + 1].ex); gs.splice(g + 1, 1); S.dirty = true; } render(); break; }
-    case "unlink": { const gs = D.days[d].groups; const rest = gs[g].ex.slice(1).map(x => ({ id: "g" + uid(), ex: [x] })); gs[g].ex = gs[g].ex.slice(0, 1); gs.splice(g + 1, 0, ...rest); S.dirty = true; render(); break; }
+    case "addDay": D.days.push({ id: "d" + uid(), name: "يوم " + (D.days.length + 1), groups: [{ id: "g" + uid(), ex: [newEx(), newEx()] }] }); markDirty(); render(); break;
+    case "delDay": if (prevArmed === "day:" + d) { D.days.splice(d, 1); markDirty(); } else S.armed = "day:" + d; render(); break;
+    case "addSS": D.days[d].groups.push({ id: "g" + uid(), ex: [newEx(), newEx()] }); markDirty(); render(); break;
+    case "addEx": D.days[d].groups.push({ id: "g" + uid(), ex: [newEx()] }); markDirty(); render(); break;
+    case "addToG": D.days[d].groups[g].ex.push(newEx()); markDirty(); render(); break;
+    case "mvG": { const gs = D.days[d].groups, j = g + +b.dataset.dir; if (j >= 0 && j < gs.length) { [gs[g], gs[j]] = [gs[j], gs[g]]; markDirty(); } render(); break; }
+    case "link": { const gs = D.days[d].groups; if (gs[g + 1]) { gs[g].ex = gs[g].ex.concat(gs[g + 1].ex); gs.splice(g + 1, 1); markDirty(); } render(); break; }
+    case "unlink": { const gs = D.days[d].groups; const rest = gs[g].ex.slice(1).map(x => ({ id: "g" + uid(), ex: [x] })); gs[g].ex = gs[g].ex.slice(0, 1); gs.splice(g + 1, 0, ...rest); markDirty(); render(); break; }
     case "delEx": {
       const key = "ex:" + d + "-" + g + "-" + b.dataset.e;
-      if (prevArmed === key) { const gs = D.days[d].groups; gs[g].ex.splice(+b.dataset.e, 1); if (!gs[g].ex.length) gs.splice(g, 1); S.dirty = true; }
+      if (prevArmed === key) { const gs = D.days[d].groups; gs[g].ex.splice(+b.dataset.e, 1); if (!gs[g].ex.length) gs.splice(g, 1); markDirty(); }
       else S.armed = key;
       render(); break;
     }
