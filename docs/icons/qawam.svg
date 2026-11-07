@@ -1,6 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"><rect width="512" height="512" rx="112" fill="#173F35"/><g transform="translate(256 256) scale(1) translate(-256 -256)"><polygon points="78,211 112,211 112,301 78,301" fill="#E9E2D6"/>
-<polygon points="119,181 155,181 155,331 119,331" fill="#E9E2D6"/>
-<polygon points="357,181 393,181 393,331 357,331" fill="#E9E2D6"/>
-<polygon points="400,211 434,211 434,301 400,301" fill="#E9E2D6"/>
-<polygon points="171,221 225,167 306,167 341,202 341,267 305,267 305,216 291,202 240,202 207,235 207,260 171,296" fill="#E9E2D6"/>
-<polygon points="207,267 267,267 337,337 276,337" fill="#E9E2D6"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#1B2D4A"/>
+  <g transform="translate(256 256) scale(1) translate(-256 -256)">
+    <circle cx="256" cy="256" r="206" fill="#E9E2D6"/>
+    <circle cx="256" cy="256" r="186" fill="none" stroke="#1B2D4A" stroke-width="5"/>
+    <circle cx="256" cy="256" r="84" fill="#1B2D4A"/>
+    <circle cx="256" cy="256" r="62" fill="none" stroke="#E9E2D6" stroke-width="5"/>
+    <circle cx="256" cy="256" r="30" fill="#1B2D4A"/>
+    <defs>
+      <path id="qt" d="M130 256 A126 126 0 0 1 382 256"/>
+      <path id="qb" d="M126 256 A130 130 0 0 0 386 256"/>
+    </defs>
+    <text font-family="'IBM Plex Sans Arabic',sans-serif" font-weight="700" font-size="58" fill="#1B2D4A" text-anchor="middle"><textPath href="#qt" startOffset="50%">قوام</textPath></text>
+    <text font-family="'IBM Plex Sans Arabic',sans-serif" font-weight="700" font-size="34" letter-spacing="14" fill="#1B2D4A" text-anchor="middle" dominant-baseline="hanging"><textPath href="#qb" startOffset="50%">QAWAM</textPath></text>
+    <rect x="58" y="249" width="22" height="14" fill="#1B2D4A"/>
+    <rect x="432" y="249" width="22" height="14" fill="#1B2D4A"/>
+  </g></svg>

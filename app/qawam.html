@@ -7,12 +7,12 @@
 /* QAWAM design system. One dark theme only; every color comes from these tokens.
    Layout: phone-first single column, sticky brand bar, fixed five-tab bottom navigation. */
 :root{
-  --background:#101B17; --surface:#1B2923; --surface-elevated:#294137;
-  --primary:#173F35; --secondary:#789887;
-  --text-primary:#E9E2D6; --text-secondary:#9DAAA1; --border:#35443C;
+  --background:#0E1626; --surface:#162236; --surface-elevated:#22314A;
+  --primary:#1B2D4A; --secondary:#8299BA;
+  --text-primary:#E9E2D6; --text-secondary:#9AA6B8; --border:#2C3B54;
   --warning:#F29A38; --danger:#D94B3D;
   /* derived (still from the tokens above) */
-  --secondary-soft:rgba(120,152,135,.16); --cream-soft:rgba(233,226,214,.08);
+  --secondary-soft:rgba(130,153,186,.16); --cream-soft:rgba(233,226,214,.08);
   --warning-soft:rgba(242,154,56,.13); --danger-soft:rgba(217,75,61,.14);
   --font:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
   --r:16px; --r-sm:11px;
@@ -81,7 +81,7 @@ input,select,textarea{font:inherit;color:var(--text-primary)}
 .btn{border:1px solid var(--border);background:var(--surface);border-radius:var(--r-sm);padding:9px 14px;font-weight:600;font-size:14px;color:var(--text-primary);display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .btn:hover{background:var(--surface-elevated)}
 .btn.primary{background:var(--primary);border-color:var(--secondary)}
-.btn.primary:hover{background:#1d4a3f}
+.btn.primary:hover{background:#243A5C}
 .btn.cta{background:var(--text-primary);border-color:var(--text-primary);color:var(--background);font-weight:700}
 .btn.cta:hover{background:#f3eee5}
 .btn.big{width:100%;padding:14px;font-size:16px;border-radius:var(--r)}
@@ -104,13 +104,17 @@ input,select,textarea{font:inherit;color:var(--text-primary)}
 .greet h2{font-size:24px}
 .greet p{color:var(--text-secondary);font-size:13.5px}
 .week{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
-.ring{width:96px;height:96px;position:relative}
+.wk-side{display:flex;flex-direction:column;gap:5px;min-width:0}
+.wk-side > b{font-size:14.5px;margin-bottom:2px}
+.wk-row{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--text-secondary);border-top:1px solid var(--border);padding-top:5px}
+.wk-row b{color:var(--text-primary);font-weight:600}
+.ring{width:92px;height:92px;position:relative;flex:none}
 .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
 .ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:22px;font-weight:700;line-height:1.1;text-align:center}
 .ring b small{display:block;font-size:11px;color:var(--text-secondary);font-weight:500}
 .wstrip{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
-.wd{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;color:var(--text-secondary)}
-.wd i{width:26px;height:26px;border-radius:8px;border:1px solid var(--border);display:grid;place-items:center;font-style:normal;font-size:12px;color:var(--text-secondary)}
+.wd{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;color:var(--text-secondary);min-width:0}
+.wd i{width:100%;max-width:38px;aspect-ratio:1;border-radius:9px;border:1px solid var(--border);display:grid;place-items:center;font-style:normal;font-size:12px;color:var(--text-secondary)}
 .wd.plan i{border-color:var(--secondary);border-style:dashed}
 .wd.done i{background:var(--secondary);border-color:var(--secondary);color:var(--background);font-weight:700}
 .wd.today span{color:var(--text-primary);font-weight:700}
@@ -138,7 +142,7 @@ input,select,textarea{font:inherit;color:var(--text-primary)}
 .thumb .cam svg{width:20px;height:20px}
 .mark{flex:none;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-weight:700;font-size:12px;background:var(--text-primary);color:var(--background)}
 .thumb .mark{position:absolute;top:-7px;right:-7px;border:2px solid var(--surface)}
-.ex-name{font-weight:600;line-height:1.35;min-width:0;overflow-wrap:anywhere}
+.ex-name{font-weight:600;line-height:1.35;min-width:0;overflow-wrap:anywhere;unicode-bidi:plaintext;text-align:right}
 .ex-en{font-size:12px;color:var(--text-secondary);direction:ltr;text-align:right;unicode-bidi:plaintext}
 .ex-target{font-size:13px;color:var(--text-secondary)}
 .search{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:0 12px}
@@ -346,11 +350,11 @@ textarea.inp{width:100%;min-height:100px;border:1px solid var(--border);backgrou
 @keyframes blink{50%{opacity:.2}}
 
 /* sheet, toast */
-.scrim{position:fixed;inset:0;z-index:20;background:rgba(5,10,8,.66);display:flex;align-items:flex-end;justify-content:center}
+.scrim{position:fixed;inset:0;z-index:20;background:rgba(4,8,16,.66);display:flex;align-items:flex-end;justify-content:center}
 .sheet{background:var(--surface);border-top:1px solid var(--border);width:100%;max-width:640px;border-radius:18px 18px 0 0;padding:20px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px;max-height:88vh;overflow:auto}
 .sheet h2{font-size:21px}
 .toast{position:fixed;z-index:30;left:50%;transform:translateX(-50%);top:calc(14px + env(safe-area-inset-top,0px));background:var(--text-primary);color:var(--background);padding:9px 16px;border-radius:999px;font-size:14px;font-weight:600;max-width:calc(100% - 32px);text-align:center}
-@media (max-width:380px){ .tiles,.kpis,.factrow{grid-template-columns:1fr 1fr} .nums{grid-template-columns:1fr 1fr} .week{grid-template-columns:1fr} .ring{margin:0 auto} }
+@media (max-width:380px){ .tiles,.factrow{grid-template-columns:1fr 1fr} .nums{grid-template-columns:1fr 1fr} .ring{width:80px;height:80px} }
 @media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
 </style>
 
@@ -423,7 +427,7 @@ const S = {
   db: null, plan: null, sessions: [], ready: false, note: "",
   view: "home", pickDay: null, wOpen: null, libQ: "", libG: "", progEdit: false, statRange: "week", prAll: false, active: lsGet("gv.active"),
   draft: null, dirty: false, armed: null,
-  fresh: null, notes: {}, body: [], volWeek: 0, bodyMetric: "w", bodyForm: false, assets: null, photoMap: {}, photosLoaded: false, migrated: false, gymPhotos: [], gpBusy: null, calMonth: null, calDay: null, chat: [], coachBusy: false, coachLive: "", coachDraft: "", coachCtl: null, pending: null, sample: null, sampleState: "loading", techCache: {}, techBusy: null, progEx: null, progMetric: "top", openSess: null, rest: null, summary: null, photoView: null, exportText: ""
+  fresh: null, cardio: null, notes: {}, body: [], volWeek: 0, bodyMetric: "w", bodyForm: false, assets: null, photoMap: {}, photosLoaded: false, migrated: false, gymPhotos: [], gpBusy: null, calMonth: null, calDay: null, chat: [], coachBusy: false, coachLive: "", coachDraft: "", coachCtl: null, pending: null, sample: null, sampleState: "loading", techCache: {}, techBusy: null, progEx: null, progMetric: "top", openSess: null, rest: null, summary: null, photoView: null, exportText: ""
 };
 try {
   const OLD = { today: "home", prog: "stats", plan: "programs" };
@@ -682,7 +686,7 @@ function md(t) {
 function coachContext() {
   const list = sorted();
   const plan = S.plan ? { rest_seconds: S.plan.rest || 90, days: S.plan.days.map(d => ({ id: d.id, name: d.name, groups: d.groups.map(g => g.ex.map(e => ({ id: e.id, name: e.name, muscles: musclesFor(e.id) || undefined, sets: e.sets, reps: e.min + "-" + e.max, increment_kg: e.inc }))) })) } : null;
-  const recent = list.slice(-12).map(s => ({ date: s.date.slice(0, 10), day: s.dayName, minutes: Math.round((s.durationSec || 0) / 60), exercises: (s.entries || []).map(en => en.name + ": " + setsText(en.sets)) }));
+  const recent = list.slice(-12).map(s => ({ date: s.date.slice(0, 10), day: s.dayName, minutes: Math.round((s.durationSec || 0) / 60), cardio: s.cardio ? cardioText(s.cardio[0]) : undefined, exercises: (s.entries || []).map(en => en.name + ": " + setsText(en.sets)) }));
   const trends = allEx(S.plan).map(e => {
     const h = history(e.id); if (!h.length) return null;
     const tops = h.map(x => Math.max(...x.sets.map(s => s.w)));
@@ -733,7 +737,7 @@ function normalizePlan(i) {
     }))
   }));
   const P = S.plan || {};
-  return { rest: P.rest || 90, bw: P.bw || 0, height: P.height || 0, age: P.age || 0, sex: P.sex || "m", days };
+  return { rest: P.rest || 90, bw: P.bw || 0, height: P.height || 0, age: P.age || 0, sex: P.sex || "m", uname: P.uname || "", trainDays: P.trainDays || [], weekStart: P.weekStart != null ? P.weekStart : 6, title: P.title || "", key: P.key || "", days };
 }
 function pendingHtml() {
   const P = S.pending; if (!P) return "";
@@ -828,6 +832,7 @@ const MET = 5; // resistance training in supersets, moderate-to-vigorous effort
 const timeFmt = iso => { try { return new Date(iso).toLocaleTimeString("ar-SA-u-nu-latn-ca-gregory", { hour: "numeric", minute: "2-digit" }); } catch (e) { return ""; } };
 const sessEnd = s => s.endedAt || new Date(new Date(s.date).getTime() + (s.durationSec || 0) * 1000).toISOString();
 const bodyW = () => (S.plan && S.plan.bw > 0 ? S.plan.bw : 0);
+const kcalMET = (met, sec) => { const b = bmr(); if (b) return Math.round(met * b / 24 * sec / 3600); return bodyW() ? Math.round(met * bodyW() * sec / 3600) : null; };
 const kcalFor = sec => { const b = bmr(); if (b) return Math.round(MET * b / 24 * sec / 3600); return bodyW() ? Math.round(MET * bodyW() * sec / 3600) : null; };
 const sessKcal = s => (s.kcal != null ? s.kcal : kcalFor(s.durationSec || 0));
 const canCloud = () => !!(S.assets && S.mode === "db");
@@ -904,11 +909,12 @@ function gymPhotosHtml() {
     (S.gpBusy ? '<span class="small muted">نرفع ' + esc(S.gpBusy) + "…</span>" : '<span class="small muted"><span class="num">' + S.gymPhotos.length + "</span> صورة</span>") + "</div></section>";
   return h;
 }
-const DAY_COLORS = ["#789887", "#C8BFAE", "#5E8C7A", "#A9B8AE", "#8FA399"];
+const DAY_COLORS = ["#8299BA", "#C8BFAE", "#A9B6CA", "#D6C9A8", "#6F86A8"];
 function dayColor(dayId) { const i = S.plan ? S.plan.days.findIndex(d => d.id === dayId) : -1; return i >= 0 ? DAY_COLORS[i % DAY_COLORS.length] : "var(--muted)"; }
 function sessMeta(s) {
   const k = sessKcal(s);
-  return "<span>" + esc(timeFmt(s.date)) + " – " + esc(timeFmt(sessEnd(s))) + '</span> · <span class="num">' + Math.round((s.durationSec || 0) / 60) + "</span> د" + (k != null ? ' · <span class="num">' + k + "</span> سعرة" : "");
+  return "<span>" + esc(timeFmt(s.date)) + " – " + esc(timeFmt(sessEnd(s))) + '</span> · <span class="num">' + Math.round((s.durationSec || 0) / 60) + "</span> د" + (k != null ? ' · <span class="num">' + k + "</span> سعرة" : "") +
+    (s.cardio && s.cardio.length ? "<br>" + esc(cardioText(s.cardio[0])) : "");
 }
 function calendarHtml(list) {
   if (!S.calMonth) { const d = new Date(); S.calMonth = [d.getFullYear(), d.getMonth()]; }
@@ -965,7 +971,7 @@ const GROUPS = [["أسفل الظهر", "أسفل الظهر"], ["الصدر", "
 const SMALL = new Set(["كتف أمامي", "كتف خلفي", "الترابيس", "الساعد", "أسفل الظهر", "الفخذ الداخلي", "السمانة"]);
 const groupOf = name => { for (const [k, g] of GROUPS) if (name.includes(k)) return g; return name; };
 const rangeOf = g => (SMALL.has(g) ? [6, 16] : [10, 20]);
-function weekStart(offset) { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 1) % 7 + offset * 7); return d; }
+function weekStart(offset) { const ws0 = S.plan && S.plan.weekStart != null ? S.plan.weekStart : 6; const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() - ws0 + 7) % 7 + offset * 7); return d; }
 function addSets(vol, m, n) {
   const seen = {};
   m.p.forEach(x => { const g = groupOf(x); if (seen[g]) return; seen[g] = 1; vol[g] = (vol[g] || 0) + n; });
@@ -1063,8 +1069,8 @@ const AR = {
   "lg-press": "دفع الأرجل", "lg-calf": "سمانة واقف بالجهاز", "lg-hack": "هاك سكوات", "lg-curl": "رفرفة خلفية جالس",
   "lg-rdl": "رومانيان ديدلفت بالدمبل", "lg-ext": "رفرفة أمامية", "lg-thrust": "دفع الورك", "lg-adduct": "ضم الفخذ بالجهاز"
 };
-const arName = (id, fallback) => AR[id] || fallback || exName(id) || "تمرين";
-const enName = (id, name) => (AR[id] ? name || "" : "");
+const arName = (id, fallback) => fallback || exName(id) || AR[id] || "تمرين"; // display: English machine names, as named in the gym
+const enName = () => "";
 
 /* ---------- ready-made programs ---------- */
 const libEx = new Map(allEx(TEMPLATE).map(e => [e.id, e]));
@@ -1079,7 +1085,7 @@ const PROGRAMS = [
     { id: "lo2", name: "سفلي ٢", groups: [G("lb1", "lg-hack", "lg-curl"), G("lb2", "lg-rdl", "lg-calf"), G("lb3", "lg-ext", "lg-adduct"), G("lb4", "lg-thrust")] }
   ] }) }
 ];
-const PROFILE_KEYS = ["rest", "bw", "height", "age", "sex", "uname", "trainDays"];
+const PROFILE_KEYS = ["rest", "bw", "height", "age", "sex", "uname", "trainDays", "weekStart"];
 async function applyProgram(key) {
   const pr = PROGRAMS.find(x => x.key === key); if (!pr) return;
   const p = pr.plan(); p.title = pr.title; p.key = pr.key;
@@ -1091,15 +1097,17 @@ async function applyProgram(key) {
 const WD = ["ح", "ن", "ث", "ر", "خ", "ج", "س"]; // JS getDay order: Sunday..Saturday
 const WD_FULL = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
 const SAT_FIRST = [6, 0, 1, 2, 3, 4, 5];
-const LOGO = '<svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#173F35"/><g fill="#E9E2D6">' +
-  '<polygon points="78,211 112,211 112,301 78,301"/><polygon points="119,181 155,181 155,331 119,331"/>' +
-  '<polygon points="357,181 393,181 393,331 357,331"/><polygon points="400,211 434,211 434,301 400,301"/>' +
-  '<polygon points="171,221 225,167 306,167 341,202 341,267 305,267 305,216 291,202 240,202 207,235 207,260 171,296"/>' +
-  '<polygon points="207,267 267,267 337,337 276,337"/></g></svg>';
+const LOGO = '<svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#1B2D4A"/>' +
+  '<circle cx="256" cy="256" r="206" fill="#E9E2D6"/><circle cx="256" cy="256" r="186" fill="none" stroke="#1B2D4A" stroke-width="5"/>' +
+  '<circle cx="256" cy="256" r="84" fill="#1B2D4A"/><circle cx="256" cy="256" r="62" fill="none" stroke="#E9E2D6" stroke-width="5"/><circle cx="256" cy="256" r="30" fill="#1B2D4A"/>' +
+  '<defs><path id="lgT" d="M130 256 A126 126 0 0 1 382 256"/><path id="lgB" d="M126 256 A130 130 0 0 0 386 256"/></defs>' +
+  '<text font-family="IBM Plex Sans Arabic,sans-serif" font-weight="700" font-size="58" fill="#1B2D4A" text-anchor="middle"><textPath href="#lgT" startOffset="50%">قوام</textPath></text>' +
+  '<text font-family="IBM Plex Sans Arabic,sans-serif" font-weight="700" font-size="34" letter-spacing="14" fill="#1B2D4A" text-anchor="middle" dominant-baseline="hanging"><textPath href="#lgB" startOffset="50%">QAWAM</textPath></text>' +
+  '<rect x="58" y="249" width="22" height="14" fill="#1B2D4A"/><rect x="432" y="249" width="22" height="14" fill="#1B2D4A"/></svg>';
 const sessVol = s => (s.entries || []).reduce((a, en) => a + en.sets.reduce((b, x) => b + x.w * x.r, 0), 0);
 const sessSets = s => (s.entries || []).reduce((a, e) => a + e.sets.length, 0);
 const kfmt = v => (v >= 10000 ? fmt(v / 1000) + "k" : String(Math.round(v)));
-const target = () => (S.plan && Array.isArray(S.plan.trainDays) && S.plan.trainDays.length) || (S.plan ? Math.min(6, S.plan.days.length) : 3);
+const target = () => (S.plan && Array.isArray(S.plan.trainDays) && S.plan.trainDays.length) || (S.plan ? Math.max(1, S.plan.days.length) : 3);
 function estMinutes(day) {
   const rest = (S.plan && S.plan.rest) || 90;
   return Math.round(day.groups.reduce((a, g) => a + Math.max(...g.ex.map(e => e.sets)) * (g.ex.length * 50 + rest), 0) / 60);
@@ -1129,6 +1137,57 @@ function emptyState(title, text, btn) { return '<div class="card empty"><h2>' + 
 function activeBar() {
   if (!S.active || S.view === "workout") return "";
   return '<div class="activebar"><div><span class="eyebrow">تمرين جاري</span><br><b>' + esc(S.active.day.name) + ' · <span class="num" id="elapsed">' + mmss((Date.now() - S.active.start) / 1000) + '</span></b></div><button class="btn cta sm" data-act="go" data-v="workout">كمّل التمرين</button></div>';
+}
+
+/* ---------- cardio (asked when finishing a workout) ---------- */
+const CARDIO = [
+  { k: "run", l: "جري ومشي", met: 9.8 }, { k: "walk", l: "مشي", met: 3.8 }, { k: "bike", l: "دراجة", met: 7 },
+  { k: "elliptical", l: "إليبتكال", met: 5 }, { k: "stairs", l: "درج", met: 8.8 }, { k: "row", l: "تجديف", met: 7 }, { k: "other", l: "ثاني", met: 6 }
+];
+const WALK_MET = 3.8;
+const cardioType = k => CARDIO.find(c => c.k === k) || CARDIO[CARDIO.length - 1];
+function cardioKcal(c) {
+  if (!c) return 0;
+  if (c.type === "run" && c.mode === "details") return (kcalMET(cardioType("run").met, (c.run || 0) * 60) || 0) + (kcalMET(WALK_MET, (c.walk || 0) * 60) || 0);
+  return kcalMET(cardioType(c.type).met, (c.min || 0) * 60) || 0;
+}
+function cardioText(c) {
+  if (!c) return "";
+  const t = cardioType(c.type).l, w = c.when === "before" ? "قبل التمرين" : "بعد التمرين";
+  let d = c.type === "run" && c.mode === "details" ? "جري " + (c.run || 0) + " د + مشي " + (c.walk || 0) + " د" : t + " " + c.min + " د";
+  if (c.dist) d += " · " + fmt(c.dist) + " كم";
+  return "كارديو " + w + ": " + d;
+}
+const sessCardioMin = s => (s.cardio || []).reduce((a, c) => a + (c.min || 0), 0);
+function openCardio() { S.cardio = { step: "ask", when: "after", type: "run", mode: "details", run: "", walk: "", min: "", dist: "" }; renderOverlay(); }
+function cardioSheet() {
+  const c = S.cardio;
+  if (c.step === "ask") return '<div class="scrim" data-act="cardioClose"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="cdh">' +
+    '<span class="eyebrow">قبل ما ننهي التمرين</span><h2 id="cdh">سويت كارديو اليوم؟</h2><p class="small muted">قبل التمرين أو بعده. ينضاف للمدة والسعرات.</p>' +
+    '<button class="btn cta big" data-act="cardioYes">نعم، أضف الكارديو</button><button class="btn big" data-act="cardioNone">لا، أنهِ التمرين</button>' +
+    '<button class="btn ghost" data-act="cardioClose">رجوع للتمرين</button></div></div>';
+  const isRun = c.type === "run", details = c.mode === "details";
+  const f = (k, label, unit, mode) => '<label for="cf-' + k + '">' + label + '<input id="cf-' + k + '" data-cf="' + k + '" type="number" inputmode="' + (mode || "numeric") + '" min="0" step="' + (k === "dist" ? "0.1" : "1") + '" value="' + esc(c[k]) + '" placeholder="' + unit + '"></label>';
+  return '<div class="scrim" data-act="cardioClose"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="cdh">' +
+    '<span class="eyebrow">الكارديو</span><h2 id="cdh">تفاصيل الكارديو</h2>' +
+    '<div class="stack"><b class="small">متى؟</b><div class="seg" role="group" aria-label="متى"><button data-act="cf" data-k="when" data-v="before" aria-pressed="' + (c.when === "before") + '">قبل التمرين</button><button data-act="cf" data-k="when" data-v="after" aria-pressed="' + (c.when === "after") + '">بعد التمرين</button></div></div>' +
+    '<div class="stack"><b class="small">النوع</b><div class="chips">' + CARDIO.map(t => '<button class="chip" data-act="cf" data-k="type" data-v="' + t.k + '" aria-pressed="' + (c.type === t.k) + '">' + t.l + "</button>").join("") + "</div></div>" +
+    '<div class="stack"><b class="small">وش تبي تسجل؟</b><div class="seg" role="group" aria-label="التفاصيل"><button data-act="cf" data-k="mode" data-v="details" aria-pressed="' + details + '">بالتفاصيل</button><button data-act="cf" data-k="mode" data-v="time" aria-pressed="' + !details + '">المدة بس</button></div></div>' +
+    '<div class="form-grid">' + (details && isRun ? f("run", "دقايق الجري", "مثلاً 20") + f("walk", "دقايق المشي", "مثلاً 10") : f("min", "المدة (دقيقة)", "مثلاً 25")) +
+    (details ? f("dist", "المسافة (كم) اختياري", "مثلاً 3.5", "decimal") : "") + "</div>" +
+    '<p class="small muted" id="cfK">' + cardioPreview() + "</p>" +
+    '<button class="btn cta big" data-act="cardioSave">احفظ وأنهِ التمرين</button><button class="btn ghost" data-act="cardioBack">رجوع</button></div></div>';
+}
+function cardioEntry() {
+  const c = S.cardio, n = v => Math.max(0, Math.round(parseFloat(v) || 0)), isRunD = c.type === "run" && c.mode === "details";
+  const e = { when: c.when, type: c.type, mode: c.mode };
+  if (isRunD) { e.run = n(c.run); e.walk = n(c.walk); e.min = e.run + e.walk; } else e.min = n(c.min);
+  const dist = parseFloat(c.dist); if (c.mode === "details" && dist > 0) e.dist = Math.round(dist * 10) / 10;
+  return e;
+}
+function cardioPreview() {
+  const e = cardioEntry(); if (!e.min) return "اكتب المدة عشان نحسب السعرات.";
+  const k = cardioKcal(e); return "المجموع " + e.min + " دقيقة" + (k ? " · ≈ " + k + " سعرة" : "");
 }
 
 /* ---------- router ---------- */
@@ -1196,15 +1255,20 @@ function viewHome() {
   const kc = bodyW() ? wk.reduce((a, s) => a + (sessKcal(s) || 0), 0) : null;
   const C = 2 * Math.PI * 42, td = Array.isArray(P.trainDays) ? P.trainDays : [];
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  h += '<section class="card stack"><div class="sec-h"><h3>أسبوعك</h3><span class="small muted">' + done + " من " + tg + " تمارين</span></div>" +
+  const over = done > tg, cardioMin = wk.reduce((a, s) => a + sessCardioMin(s), 0);
+  h += '<section class="card stack"><div class="sec-h"><h3>أسبوعك</h3>' + (td.length ? "" : '<button class="linkbtn" data-act="go" data-v="more">حدد أيام تمرينك</button>') + "</div>" +
     '<div class="week"><div class="ring" role="img" aria-label="أنجزت ' + done + " من " + tg + '"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-elevated)" stroke-width="9"/>' +
-    '<circle cx="50" cy="50" r="42" fill="none" stroke="var(--secondary)" stroke-width="9" stroke-dasharray="' + (C * pct).toFixed(1) + " " + C.toFixed(1) + '"/></svg><b>' + Math.round(pct * 100) + "٪<small>إنجاز الأسبوع</small></b></div>" +
+    (pct > 0 ? '<circle cx="50" cy="50" r="42" fill="none" stroke="var(--secondary)" stroke-width="9" stroke-dasharray="' + (C * pct).toFixed(1) + " " + C.toFixed(1) + '"/>' : "") +
+    '</svg><b><span class="num">' + done + "/" + tg + "</span><small>تمارين</small></b></div>" +
+    '<div class="wk-side"><b>' + (over ? "تجاوزت هدفك بـ " + (done - tg) + (done - tg === 1 ? " تمرين" : " تمارين") : done === tg ? "حققت هدف الأسبوع" : done ? "باقي " + (tg - done) + (tg - done === 1 ? " تمرين" : " تمارين") + " على الهدف" : "ما بديت هالأسبوع") + "</b>" +
+    '<div class="wk-row"><span>المدة</span><b><span class="num">' + Math.round(mins + cardioMin) + "</span> د</b></div>" +
+    '<div class="wk-row"><span>الحجم</span><b><span class="num">' + kfmt(vol) + "</span> كغ</b></div>" +
+    '<div class="wk-row"><span>السعرات</span><b>' + (kc != null ? '<span class="num">' + kc + "</span>" : "—") + "</b></div></div></div>" +
     '<div class="wstrip">' + [0, 1, 2, 3, 4, 5, 6].map(i => {
       const d = new Date(ws); d.setDate(d.getDate() + i);
       const hit = wk.some(s => { const t = new Date(s.date); t.setHours(0, 0, 0, 0); return +t === +d; });
       return '<div class="wd' + (hit ? " done" : td.includes(d.getDay()) ? " plan" : "") + (+d === +today ? " today" : "") + '"><span>' + WD[d.getDay()] + "</span><i>" + (hit ? "✓" : d.getDate()) + "</i></div>";
-    }).join("") + "</div></div>" +
-    '<div class="kpis"><div class="kpi"><b>' + Math.round(mins) + "</b><span>دقيقة</span></div><div class=\"kpi\"><b>" + kfmt(vol) + "</b><span>حجم (كغ)</span></div><div class=\"kpi\"><b>" + (kc != null ? kc : "—") + "</b><span>سعرة تقديرية</span></div></div></section>";
+    }).join("") + "</div></section>";
   if (!S.active) {
     const nd = nextDay(), day = P.days.find(d => d.id === S.pickDay) || nd;
     const restDay = td.length && !td.includes(new Date().getDay());
@@ -1244,7 +1308,7 @@ function libMatches(it) {
   if (S.libG) { const mm = musclesFor(it.ex.id); if (!mm || !mm.p.some(x => groupOf(x) === S.libG)) return false; }
   if (!q) return true;
   const mm = musclesFor(it.ex.id);
-  return [arName(it.ex.id, it.ex.name), it.ex.name].concat(mm ? mm.p.concat(mm.s) : []).join(" ").toLowerCase().includes(q);
+  return [AR[it.ex.id] || "", it.ex.name].concat(mm ? mm.p.concat(mm.s) : []).join(" ").toLowerCase().includes(q);
 }
 function libItemsHtml() {
   const items = libraryList().filter(libMatches);
@@ -1260,7 +1324,7 @@ function libItemsHtml() {
 function viewLibrary() {
   const items = libraryList(), groups = libGroups(items);
   return '<section class="stack"><div class="sec-h"><h2>مكتبة التمارين</h2><span class="small muted">' + items.length + " تمرين</span></div>" +
-    '<label class="search">' + ICON.search + '<input id="libQ" type="search" placeholder="ابحث باسم التمرين أو العضلة" aria-label="بحث" value="' + esc(S.libQ || "") + '"></label>' +
+    '<label class="search">' + ICON.search + '<input id="libQ" type="search" placeholder="ابحث بالاسم (عربي أو إنجليزي) أو العضلة" aria-label="بحث" value="' + esc(S.libQ || "") + '"></label>' +
     '<div class="scrollx" role="group" aria-label="فلتر العضلات"><button class="chip" data-act="libG" data-v="" aria-pressed="' + !S.libG + '">الكل</button>' +
     groups.map(g => '<button class="chip" data-act="libG" data-v="' + esc(g) + '" aria-pressed="' + (S.libG === g) + '">' + esc(g) + "</button>").join("") + "</div>" +
     '<div class="lib" id="libList">' + libItemsHtml() + "</div></section>";
@@ -1310,8 +1374,7 @@ function editorHtml() {
       g.ex.forEach((ex, ei) => {
         const p = 'data-d="' + di + '" data-g="' + gi + '" data-e="' + ei + '"', id = di + "-" + gi + "-" + ei;
         h += '<div class="ex-ed"><div class="row" style="flex-wrap:nowrap">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">' +
-          (AR[ex.id] ? '<span class="ex-name">' + esc(AR[ex.id]) + "</span>" : "") +
-          '<input class="nm" id="nm-' + id + '" aria-label="اسم التمرين" placeholder="اسم التمرين" data-pf="name" ' + p + ' value="' + esc(ex.name) + '"></div>' +
+                    '<input class="nm" id="nm-' + id + '" aria-label="اسم التمرين" placeholder="اسم التمرين" data-pf="name" ' + p + ' value="' + esc(ex.name) + '"></div>' +
           '<button class="btn sm ghost" data-act="delEx" ' + p + ' aria-label="احذف التمرين" style="color:var(--danger)">' + (S.armed === "ex:" + id ? "متأكد؟" : "✕") + "</button></div>" +
           '<div class="nums">' +
           '<label for="st-' + id + '">جولات<input id="st-' + id + '" type="number" inputmode="numeric" min="1" max="10" data-pf="sets" ' + p + ' value="' + ex.sets + '"></label>' +
@@ -1524,7 +1587,8 @@ function viewMore() {
     '<p class="small muted">السعرات تنحسب بمعادلة ميفلين (معدل حرقك) × جهد تمارين المقاومة. وزنك يتحدث تلقائياً لما تسجله في إحصائياتي.</p></section>';
   h += '<section class="card stack"><div class="sec-h"><h3>أيام التمرين</h3><span class="small muted">' + (td.length ? td.length + " أيام بالأسبوع" : "ما حددت") + '</span></div><div class="chips" role="group" aria-label="أيام التمرين">' +
     SAT_FIRST.map(d => '<button class="chip" data-act="trainDay" data-d="' + d + '" aria-pressed="' + td.includes(d) + '">' + WD_FULL[d] + "</button>").join("") + "</div>" +
-    '<p class="small muted">تُستخدم لهدف الأسبوع في الرئيسية وجدول التمارين الجاية.</p></section>';
+    '<div class="stack"><b class="small">الأسبوع يبدأ من</b><div class="seg" role="group" aria-label="بداية الأسبوع">' + [[6, "السبت"], [0, "الأحد"], [1, "الاثنين"]].map(([v, l]) => '<button data-act="weekStartSet" data-v="' + v + '" aria-pressed="' + ((D.weekStart != null ? D.weekStart : 6) === v) + '">' + l + "</button>").join("") + "</div></div>" +
+    '<p class="small muted">أيام التمرين تحدد هدفك الأسبوعي (عدد التمارين) وجدول التمارين الجاية. وإذا ما حددتها، الهدف يكون عدد أيام برنامجك.</p></section>';
   h += '<section class="card"><div class="menu">' +
     '<button data-act="go" data-v="coach">' + ICON.coach + "<span>المدرب<br><small>اسأله عن تطورك، والتكنيك، وتعديل البرنامج</small></span>‹</button>" +
     '<button data-act="go" data-v="programs">' + ICON.prog2 + "<span>البرنامج والتمارين<br><small>عدّل الأيام والجولات والعدات</small></span>‹</button>" +
@@ -1551,6 +1615,7 @@ function sheetFacts(id) {
   return out;
 }
 function renderOverlay() {
+  if (S.cardio) { document.getElementById("overlay").innerHTML = cardioSheet(); return; }
   const o = document.getElementById("overlay");
   if (S.photoView) {
     const id = S.photoView, src = photoGet(id), stock = !src && STOCK.has(id);
@@ -1571,6 +1636,7 @@ function renderOverlay() {
   o.innerHTML = '<div class="scrim" data-act="closeOv"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sumh">' +
     '<span class="eyebrow">انحفظ التمرين</span><h2 id="sumh">عاش! خلصت ' + esc(sm.dayName) + "</h2>" +
     '<div class="tiles"><div class="tile"><b>' + Math.round(sm.min) + '</b><span>دقيقة</span></div><div class="tile"><b>' + (sm.kcal != null ? sm.kcal : "—") + '</b><span>سعرة تقديرية</span></div><div class="tile"><b>' + sm.sets + "</b><span>جولة</span></div></div>" +
+    (sm.cardio ? '<p class="small" style="margin:0">' + esc(cardioText(sm.cardio)) + (sm.cardio.kcal ? " · ≈ " + sm.cardio.kcal + " سعرة" : "") + "</p>" : "") +
     '<p class="small muted" style="margin:0">من ' + esc(timeFmt(sm.start)) + " إلى " + esc(timeFmt(sm.end)) + ' · الحجم <span class="num">' + Math.round(sm.vol) + "</span> كغ" + (sm.kcal == null ? " · أضف وزنك في الخطة عشان نحسب السعرات" : "") + "</p>" +
     (sm.prs.length ? '<div style="display:flex;flex-direction:column;gap:6px"><b>أرقام قياسية جديدة</b>' + sm.prs.map(p => '<div class="spread"><span class="ex-name">' + esc(p.name) + '</span><span class="pill pr">' + esc(p.text) + "</span></div>").join("") + "</div>" : "") +
     ((sm.improved || []).length ? '<div style="display:flex;flex-direction:column;gap:6px"><b>تحسنت عن آخر مرة في</b>' + sm.improved.map(n => '<div class="spread"><span class="ex-name">' + esc(n) + '</span><span class="delta up">↑ تحسن</span></div>').join("") + "</div>" : "") +
@@ -1666,7 +1732,7 @@ function tick(exId, i) {
   if (f.isLast) { S.rest = { end: Date.now() + ((S.plan && S.plan.rest) || 90) * 1000, label: f.g.ex.length > 1 ? "السوبر ست" : "الجولة", fired: false }; }
   render();
 }
-async function finish() {
+async function finish(cardio) {
   const A = S.active;
   const entries = [];
   A.day.groups.forEach(g => g.ex.forEach(ex => {
@@ -1686,10 +1752,12 @@ async function finish() {
     else if (nowBest > prevBest + 0.05) prs.push({ name: en.name, text: "قوة تقديرية " + fmt(nowBest) + " كغ" });
   });
   const s = { id: A.id, date: new Date(A.start).toISOString(), dayId: A.day.id, dayName: A.day.name, durationSec: Math.round((Date.now() - A.start) / 1000), endedAt: new Date().toISOString(), entries };
+  if (cardio && cardio.min > 0) { const ck = cardioKcal(cardio); cardio.kcal = ck || null; s.cardio = [cardio]; }
   s.kcal = kcalFor(s.durationSec);
+  if (s.kcal != null && s.cardio) s.kcal += s.cardio[0].kcal || 0;
   try { await putSession(s); } catch (e) { writeErr(e); return; }
   const improved = entries.filter(en => exImproved(A, en.exId) && !prs.some(p => p.name === en.name)).map(en => en.name);
-  S.summary = { improved, dayName: s.dayName, sets: entries.reduce((a, e) => a + e.sets.length, 0), vol: entries.reduce((a, e) => a + e.sets.reduce((b, x) => b + x.w * x.r, 0), 0), min: s.durationSec / 60, prs, kcal: s.kcal, start: s.date, end: s.endedAt };
+  S.summary = { cardio: s.cardio ? s.cardio[0] : null, improved, dayName: s.dayName, sets: entries.reduce((a, e) => a + e.sets.length, 0), vol: entries.reduce((a, e) => a + e.sets.reduce((b, x) => b + x.w * x.r, 0), 0), min: s.durationSec / 60, prs, kcal: s.kcal, start: s.date, end: s.endedAt };
   S.active = null; S.rest = null; saveActive(); S.view = "home"; try { location.hash = "home"; } catch (x) {}
   try { wake && wake.release(); } catch (e) {} wake = null;
   render();
@@ -1748,7 +1816,11 @@ app.addEventListener("input", e => {
   markDirty();
 });
 document.addEventListener("keydown", e => { const t = e.target; if ((e.key === "Enter" || e.key === " ") && t.getAttribute && t.getAttribute("role") === "button") { e.preventDefault(); t.click(); } });
-document.getElementById("overlay").addEventListener("input", e => { const t = e.target; if (t.dataset && t.dataset.note) queueNote(t.dataset.note, t.value); });
+document.getElementById("overlay").addEventListener("input", e => {
+  const t = e.target; if (!t.dataset) return;
+  if (t.dataset.note) queueNote(t.dataset.note, t.value);
+  if (t.dataset.cf && S.cardio) { S.cardio[t.dataset.cf] = t.value; const k = document.getElementById("cfK"); if (k) k.textContent = cardioPreview(); }
+});
 app.addEventListener("submit", e => {
   if (e.target.id !== "composer") return;
   e.preventDefault();
@@ -1763,7 +1835,7 @@ app.addEventListener("change", e => {
 document.addEventListener("click", async e => {
   const b = e.target.closest("[data-act]"); if (!b) return;
   const act = b.dataset.act, d = +b.dataset.d, g = +b.dataset.g;
-  if (act === "closeOv" && b.classList.contains("scrim") && e.target !== b) return;
+  if ((act === "closeOv" || act === "cardioClose") && b.classList.contains("scrim") && e.target !== b) return;
   const prevArmed = S.armed; S.armed = null;
   const D = S.draft;
   switch (act) {
@@ -1786,7 +1858,18 @@ document.addEventListener("click", async e => {
     case "tick": tick(b.dataset.ex, +b.dataset.i); break;
     case "addSet": { const l = S.active.log[b.dataset.ex]; const lw = l.length ? l[l.length - 1].w : ""; l.push({ w: lw, r: "", done: false }); saveActive(); render(); break; }
     case "rmSet": { const l = S.active.log[b.dataset.ex]; if (l.length > 1) l.pop(); saveActive(); render(); break; }
-    case "finish": finish(); break;
+    case "finish": openCardio(); break;
+    case "cardioClose": if (b.classList.contains("scrim") && e.target !== b) break; S.cardio = null; renderOverlay(); break;
+    case "cardioNone": S.cardio = null; renderOverlay(); finish(null); break;
+    case "cardioYes": S.cardio.step = "form"; renderOverlay(); break;
+    case "cardioBack": S.cardio.step = "ask"; renderOverlay(); break;
+    case "cf": S.cardio[b.dataset.k] = b.dataset.v; renderOverlay(); break;
+    case "cardioSave": {
+      const ce = cardioEntry();
+      if (!ce.min) { toast("اكتب مدة الكارديو، أو ارجع واختر لا."); break; }
+      S.cardio = null; renderOverlay(); finish(ce); break;
+    }
+    case "weekStartSet": if (!S.draft && S.plan) S.draft = clone(S.plan); if (S.draft) { S.draft.weekStart = +b.dataset.v; markDirty(); render(); } break;
     case "cancel": if (prevArmed === "cancel") { S.active = null; S.rest = null; saveActive(); S.view = "home"; try { location.hash = "home"; } catch (x) {} try { wake && wake.release(); } catch (x) {} toast("انلغى التمرين"); } else S.armed = "cancel"; render(); break;
     case "rest15": if (S.rest) { S.rest.end = Math.max(S.rest.end, Date.now()) + 15000; S.rest.fired = false; renderRest(); } break;
     case "restSkip": S.rest = null; renderRest(); break;
