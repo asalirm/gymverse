@@ -78,7 +78,7 @@ input,select,textarea{font:inherit;color:var(--ink)}
 /* bottom nav */
 .nav{position:fixed;inset:auto 0 0 0;z-index:6;background:var(--surface);border-top:1px solid var(--line);
   padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
-.nav-in{max-width:620px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr)}
+.nav-in{max-width:620px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
 .nav button{background:none;border:0;padding:10px 4px 12px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:13px;color:var(--muted);font-weight:500}
 .nav button svg{width:22px;height:22px}
 .nav button[aria-current="page"]{color:var(--accent);font-weight:700}
@@ -181,6 +181,33 @@ input,select,textarea{font:inherit;color:var(--ink)}
 .fire{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 10px;font-size:12.5px;font-weight:700;background:var(--good);color:#fff;margin-top:4px}
 @keyframes pop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
 
+/* coach */
+.coach-head h2{font-family:var(--f-display);font-size:26px;font-weight:800}
+.chat{display:flex;flex-direction:column;gap:10px}
+.msg{max-width:88%;padding:10px 14px;border-radius:18px;line-height:1.65;font-size:15px;overflow-wrap:anywhere;min-width:0}
+.msg p{margin:0 0 6px}.msg p:last-child{margin-bottom:0}
+.msg ul,.msg ol{margin:4px 0 6px;padding-inline-start:20px}
+.msg.user{align-self:flex-start;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;border-start-start-radius:6px}
+.msg.bot{align-self:flex-end;background:var(--surface);border:1px solid var(--line);border-start-end-radius:6px;box-shadow:var(--shadow)}
+.composer{position:sticky;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:4;display:flex;gap:8px;align-items:flex-end;background:var(--bg);padding-block:8px}
+.composer textarea{flex:1;min-width:0;min-height:48px;max-height:140px;border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;background:var(--surface);resize:none;font-size:15px}
+.composer textarea:focus{border-color:var(--accent);outline:none}
+.composer .btn{height:48px;border-radius:16px}
+.proposal{display:flex;flex-direction:column;gap:8px;border-color:var(--plate)}
+.proposal ul{margin:4px 0 0;padding-inline-start:18px;font-size:13.5px}
+.dots::after{content:"…";animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.2}}
+.chips .chip{font-weight:500}
+/* technique */
+.techbtn{background:none;border:0;padding:2px 0;color:var(--accent);font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:4px}
+.techbtn svg{width:15px;height:15px}
+.tech{display:flex;flex-direction:column;gap:10px}
+.tech-sec ol,.tech-sec ul{margin:4px 0 0;padding-inline-start:20px;display:flex;flex-direction:column;gap:3px}
+.tech-sec.tips b{color:var(--good)}
+.tech-sec.avoid b{color:var(--bad)}
+.addphoto{height:120px;border:1.5px dashed var(--line);border-radius:12px;background:var(--surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted);font-weight:600}
+.addphoto svg{width:26px;height:26px}
+
 /* rest timer */
 .rest{position:fixed;z-index:7;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(72px + env(safe-area-inset-bottom,0px));
   max-width:596px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 28px rgba(0,0,0,.25)}
@@ -273,6 +300,8 @@ const ICON = {
   prog: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 16l4-5 4 3 6-8"/></svg>',
   plan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
   cam: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  coach: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg>',
+  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C6.5 4 9.5 4 12 5.5 14.5 4 17.5 4 20 5.5V19c-2.5-1.5-5.5-1.5-8 0-2.5-1.5-5.5-1.5-8 0z"/><path d="M12 5.5V19"/></svg>',
   tick: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
 };
 
@@ -302,9 +331,9 @@ const S = {
   db: null, plan: null, sessions: [], ready: false, note: "",
   view: "today", pickDay: null, active: lsGet("gv.active"),
   draft: null, dirty: false, armed: null,
-  fresh: null, progEx: null, progMetric: "e1rm", openSess: null, rest: null, summary: null, photoView: null, exportText: ""
+  fresh: null, chat: [], coachBusy: false, coachLive: "", coachDraft: "", coachCtl: null, pending: null, sample: null, sampleState: "loading", techCache: {}, techBusy: null, progEx: null, progMetric: "e1rm", openSess: null, rest: null, summary: null, photoView: null, exportText: ""
 };
-try { const v = lsGet("gv.view"); if (v === "today" || v === "prog" || v === "plan") S.view = v; } catch (e) {}
+try { const v = lsGet("gv.view"); if (v === "today" || v === "prog" || v === "plan" || v === "coach") S.view = v; } catch (e) {}
 
 /* ---------- storage ---------- */
 async function boot() {
@@ -313,10 +342,17 @@ async function boot() {
   if (window.claude && typeof window.claude.use === "function") {
     try { db = await window.claude.use("db"); } catch (e) { db = null; }
   }
-  if (db) { S.db = db; S.mode = "db"; subscribe(); }
-  else {
-    S.mode = "local"; S.plan = lsGet("gv.plan"); S.sessions = lsGet("gv.sessions") || []; S.ready = true; render();
+  if (db) {
+    S.db = db; S.mode = "db"; subscribe();
+    db.doc("chat/main").get().then(sn => { if (sn.exists && Array.isArray(sn.data().msgs) && !S.chat.length) { S.chat = sn.data().msgs.slice(-40); if (S.view === "coach") render(); } }).catch(() => {});
+  } else {
+    S.mode = "local"; S.plan = lsGet("gv.plan"); S.sessions = lsGet("gv.sessions") || []; S.chat = lsGet("gv.chat") || []; S.ready = true; render();
   }
+  let smp = null;
+  if (window.claude && typeof window.claude.use === "function") { try { smp = await window.claude.use("sample"); } catch (e) { smp = null; } }
+  S.sample = smp; S.sampleState = smp ? "ready" : "none";
+  if (S.view === "coach") render();
+  if (S.photoView) renderOverlay();
 }
 function subscribe() {
   let gotPlan = false, gotSess = false;
@@ -428,6 +464,7 @@ function thumb(ex, mark) {
   return '<button class="thumb' + (src ? " has" : "") + '" data-act="photo" data-ex="' + esc(ex.id) + '" aria-label="' + (src ? "كبّر صورة الجهاز" : "أضف صورة الجهاز") + '">' +
     (src ? '<img src="' + src + '" alt="" loading="lazy">' : '<span class="cam">' + ICON.cam + "صورة</span>") + '<span class="mark">' + mark + "</span></button>";
 }
+const techBtn = ex => '<button class="techbtn" data-act="photo" data-ex="' + esc(ex.id) + '">' + ICON.book + "طريقة الأداء</button>";
 function exName(id) {
   const pools = [S.draft, S.plan, S.active && { days: [S.active.day] }];
   for (const p of pools) { if (!p) continue; const e = allEx(p).find(x => x.id === id); if (e) return e.name; }
@@ -448,6 +485,193 @@ function shrink(file) {
 let photoTarget = null;
 function pickPhoto(id) { photoTarget = id; const inp = document.getElementById("photoIn"); if (inp) inp.click(); }
 
+/* ---------- technique notes (Arabic) for the template exercises ---------- */
+const T = (steps, tips, avoid) => ({ steps, tips, avoid });
+const TECH = {
+  "pu-incline": T(["اضبط المقعد بحيث تكون المقابض على مستوى أعلى صدرك.", "ثبّت ظهرك على المسند، ورجّع لوحي الكتف للخلف وللأسفل.", "ادفع للأمام وللأعلى لين تقرب تفرد ذراعك، بدون ما تقفل الكوع.", "ارجع ببطء (٢–٣ ثواني) لين تحس بتمدد في الصدر."], ["خل الأكواع بزاوية ٤٥–٦٠ درجة من جسمك.", "ازفر مع الدفع، وخذ نفس وأنت راجع."], ["رفع الكتف أو الظهر عن المسند.", "الارتداد السريع في آخر الحركة تحت."]),
+  "pu-lateral": T(["اضبط البكرة على أسفل شي، وامسك المقبض باليد البعيدة عن الجهاز.", "قف بجنبك للجهاز، والكيبل يمر قدام جسمك.", "ارفع ذراعك للجنب بكوع منحني شوي، لين توصل مستوى الكتف.", "نزّلها ببطء وبتحكم."], ["فكّر إنك ترفع بالكوع مو بالكف.", "ميل خفيف بجسمك بعيد عن الجهاز يزيد مدى الحركة."], ["هز الجسم عشان ترفع الوزن.", "رفع الكتف لجهة الأذن، لأن الترابيس تاخذ الشغل بدال الكتف."]),
+  "pu-chest": T(["اضبط المقعد بحيث تكون المقابض على مستوى منتصف صدرك.", "ظهرك ملاصق للمسند، ولوحا الكتف للخلف.", "ادفع للأمام لين تقرب تفرد ذراعك.", "ارجع ببطء لين تحس بتمدد الصدر."], ["القدمين ثابتة على الأرض.", "اعصر صدرك ثانية في آخر الدفعة."], ["قفل الكوع بقوة في آخر الحركة.", "تقديم الكتف للأمام مع الدفع."]),
+  "pu-reardelt": T(["اجلس ووجهك للمسند، والمقابض على مستوى كتفك.", "امسك المقابض وذراعك قدامك وكوعك منحني شوي.", "افتح ذراعك للخلف بقوس واسع، لين توصل خط جسمك.", "ارجع ببطء."], ["خل انحناءة الكوع ثابتة طول الحركة.", "وزن خفيف وتحكم أحسن من وزن ثقيل."], ["عصر لوحي الكتف بقوة، لأن الشغل يروح للظهر بدال خلفي الكتف.", "الاندفاع أو الرجوع بسرعة."]),
+  "pu-ohp": T(["اضبط المقعد بحيث تكون المقابض على مستوى كتفك أو أعلى بشوي.", "ظهرك ملاصق للمسند، وشد بطنك.", "ادفع للأعلى لين تقرب تفرد ذراعك.", "نزّل ببطء لين مستوى الذقن أو الأذن."], ["خل الرسغ مستقيم وفوق الكوع.", "ازفر مع الدفع."], ["تقويس أسفل الظهر.", "النزول الناقص."]),
+  "pu-shrug": T(["قف وفي كل يد دمبل جنبك.", "ارفع كتفك لفوق باتجاه الأذن، بخط مستقيم.", "ثبّت ثانية فوق.", "نزّل ببطء لآخر المدى."], ["خل ذراعك مستقيمة ولا تثني الكوع.", "خل نظرك للأمام."], ["تدوير الكتف.", "وزن ثقيل بمدى قصير."]),
+  "pu-tripress": T(["اضبط المقعد بحيث تكون المقابض جنب صدرك.", "اضغط للأسفل لين تستقيم ذراعك.", "ارجع ببطء لين يصير كوعك بزاوية ٩٠ درجة تقريباً."], ["خل كوعك قريب من جسمك.", "خل جسمك مستقيم وثابت."], ["الميل للأمام عشان تشغّل صدرك.", "الرجوع بسرعة."]),
+  "pu-pushdown": T(["اضبط البكرة فوق، وامسك البار من فوق بعرض كتفك.", "خل كوعك ملاصق لجنبك.", "ادفع البار لتحت لين تفرد ذراعك.", "ارجع لين يصير ساعدك موازي للأرض تقريباً."], ["انحني شوي للأمام من الورك.", "خل كوعك ثابت ما يتحرك."], ["تقديم الكوع للأمام.", "الدفع بوزن جسمك."]),
+  "pl-pulldown": T(["ثبّت فخذك تحت الوسادة، وامسك البار بقبضة أعرض من كتفك.", "ارفع صدرك وميل للخلف شوي.", "اسحب البار لأعلى صدرك، ونزّل كوعك لتحت.", "ارجع ببطء لين تحس بتمدد ظهرك."], ["ابدأ الحركة بإنزال لوحي الكتف.", "فكّر إنك تسحب بالكوع مو باليد."], ["السحب ورا الرقبة.", "التأرجح بجسمك."]),
+  "pl-cablecurl": T(["اضبط البكرة تحت، وامسك البار من تحت بعرض كتفك.", "خل كوعك ثابت جنبك.", "اثنِ ذراعك لين يقرب البار من كتفك.", "نزّل ببطء لين تقرب تفرد ذراعك."], ["اعصر الباي ثانية فوق.", "خل رسغك مستقيم."], ["تقديم الكوع للأمام.", "التأرجح بظهرك."]),
+  "pl-cablerow": T(["اجلس وقدمك على المسند، وركبتك منحنية شوي.", "خل ظهرك مستقيم وصدرك لفوق.", "اسحب المقبض لأسفل بطنك، واعصر لوحي الكتف.", "ارجع ببطء لين تمتد ذراعك."], ["خل كوعك قريب من جسمك.", "خل جسمك شبه ثابت."], ["الميل الكبير للأمام والخلف.", "تقويس الظهر."]),
+  "pl-hammer": T(["خذ دمبل في كل يد، وكفوفك تقابل بعض.", "اثنِ كوعك وارفع الدمبل لين الكتف.", "نزّل ببطء."], ["خل كوعك ثابت جنبك.", "تقدر تسويها بالتناوب أو باليدين مع بعض."], ["التأرجح بجسمك.", "رفع الكوع للأمام."]),
+  "pl-machrow": T(["خل صدرك على المسند، والمقابض على مدى ذراعك.", "اسحب كوعك للخلف.", "اعصر ظهرك ثانية.", "ارجع ببطء."], ["خل صدرك ملاصق للوسادة طول الوقت.", "خل كتفك لتحت ولا تطلع جهة الأذن."], ["رفع الصدر عن المسند عشان تساعد بجسمك.", "المدى الناقص."]),
+  "pl-curlmach": T(["اضبط المقعد بحيث يكون إبطك على حافة الوسادة.", "امسك المقابض من تحت.", "اثنِ ذراعك لين فوق.", "نزّل ببطء لين تقرب تفرد ذراعك."], ["خل كوعك ثابت على الوسادة.", "النزول البطيء أهم جزء في الحركة."], ["رفع المؤخرة عن المقعد.", "قفل الكوع بقوة تحت."]),
+  "pl-straightarm": T(["اضبط البكرة فوق، وامسك بار أو حبل.", "قف ومِل للأمام شوي، وذراعك شبه مستقيمة.", "اسحب البار بقوس لين يوصل فخذك.", "ارجع ببطء لين مستوى راسك."], ["لازم تحس بالشد في ظهرك (اللاتس)، مو في التراي.", "خل انحناءة الكوع البسيطة ثابتة."], ["ثني الكوع، لأنها تتحول لتمرين تراي.", "هز الجسم."]),
+  "pl-backext": T(["اضبط الوسادة تحت عظم الحوض، وكتّف ذراعك على صدرك.", "انزل من الورك وظهرك مستقيم.", "اطلع لين يصير جسمك خط مستقيم مع رجولك."], ["اعصر المؤخرة فوق.", "إذا تبي تزيد الصعوبة، امسك قرص على صدرك."], ["الطلوع أعلى من خط الجسم، لأن أسفل الظهر يتقوس.", "الحركة السريعة."]),
+  "lg-press": T(["خل ظهرك ومؤخرتك ملاصقة للمسند.", "حط قدمك في نص المنصة بعرض حوضك.", "فك القفل وانزل لين تصير ركبتك ٩٠ درجة أو أعمق، بدون ما يرتفع حوضك.", "ادفع بكعبك لين تقرب تفرد رجولك."], ["خل ركبتك باتجاه أصابع قدمك.", "لا تقفل ركبتك فوق."], ["ارتفاع الحوض عن المقعد تحت.", "دخول الركبتين للداخل."]),
+  "lg-calf": T(["خل كتفك تحت الوسادة، ومقدمة قدمك على الحافة.", "نزّل كعبك لين آخر تمدد.", "اطلع على أطراف أصابعك لأعلى نقطة.", "ثبّت ثانية فوق."], ["وقّف ثانية تحت وثانية فوق.", "خل ركبتك مستقيمة بدون ما تقفلها."], ["الارتداد السريع.", "ثني الركبة."]),
+  "lg-hack": T(["خل ظهرك على المسند وكتفك تحت الوسائد.", "حط قدمك في نص المنصة بعرض كتفك.", "انزل لين يصير فخذك موازي للمنصة أو أعمق.", "ادفع بكامل قدمك."], ["انزل بتحكم في ٢–٣ ثواني.", "إذا رفعت قدمك لأعلى المنصة، يصير التركيز أكثر على المؤخرة."], ["رفع الكعب.", "دخول الركبتين للداخل."]),
+  "lg-curl": T(["اضبط الجهاز بحيث تكون ركبتك على محوره، والوسادة فوق كاحلك.", "ثبّت وسادة الفخذ فوق رجولك.", "اثنِ رجولك لتحت وللخلف لآخر المدى.", "ارجع ببطء."], ["امسك المقابض لين يثبت جسمك.", "خل أصابع قدمك لفوق."], ["الرجوع بسرعة.", "رفع الورك عن المقعد."]),
+  "lg-rdl": T(["قف والدمبل قدام فخذك، وركبتك منحنية شوي وثابتة.", "ادفع وركك للخلف، والدمبل ينزل قريب من رجولك.", "انزل لين تحس بشد في الخلفية (تقريباً نص الساق).", "اطلع وأنت تعصر المؤخرة."], ["خل ظهرك مستقيم ونظرك على الأرض قدامك.", "الحركة تكون من الورك مو من الظهر."], ["تقويس الظهر.", "ثني الركبة كأنه سكوات."]),
+  "lg-ext": T(["خل ظهرك على المسند، وركبتك على محور الجهاز.", "الوسادة فوق كاحلك.", "افرد رجولك لين تقرب تستقيم، واعصر ثانية.", "نزّل ببطء."], ["امسك المقابض.", "خل أصابع قدمك لفوق."], ["الرفس بسرعة.", "رفع المؤخرة عن المقعد."]),
+  "lg-thrust": T(["خل أعلى ظهرك على المسند، والوسادة أو البار على حوضك.", "حط قدمك بعرض حوضك، بحيث تكون ساقك عمودية فوق.", "ادفع حوضك لفوق لين يصير جسمك خط مستقيم من الكتف للركبة.", "اعصر المؤخرة ثانية، وبعدها نزّل بتحكم."], ["دخّل ذقنك وخل نظرك للأمام.", "ادفع بكعبك."], ["تقويس أسفل الظهر فوق.", "القدم بعيدة زيادة، لأن الخلفية تاخذ الشغل."]),
+  "lg-adduct": T(["اضبط مدى الفتح بحيث تحس بتمدد مريح.", "خل ظهرك على المسند.", "ضم رجولك لين تتقابل الوسائد.", "ارجع ببطء."], ["خل الحركة بطيئة ومتحكم فيها.", "خل حوضك ثابت."], ["الفتح أكثر من مرونتك.", "الرجوع بسرعة."])
+};
+
+/* ---------- coach (Claude chat, inside the Claude viewer) ---------- */
+const ARTIFACT_URL = "https://claude.ai/artifact/N7kLwnFtT5zdbSVGcdShsh";
+function md(t) {
+  const lines = esc(t).split(/\n/); let out = "", inList = false;
+  for (let l of lines) {
+    l = l.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+    const m = l.match(/^\s*(?:[-•*]|\d+[.)])\s+(.*)/);
+    if (m) { if (!inList) { out += "<ul>"; inList = true; } out += "<li>" + m[1] + "</li>"; continue; }
+    if (inList) { out += "</ul>"; inList = false; }
+    if (/^\s*#+\s*/.test(l)) out += "<p><b>" + l.replace(/^\s*#+\s*/, "") + "</b></p>";
+    else if (l.trim()) out += "<p>" + l + "</p>";
+  }
+  if (inList) out += "</ul>";
+  return out;
+}
+function coachContext() {
+  const list = sorted();
+  const plan = S.plan ? { rest_seconds: S.plan.rest || 90, days: S.plan.days.map(d => ({ id: d.id, name: d.name, groups: d.groups.map(g => g.ex.map(e => ({ id: e.id, name: e.name, sets: e.sets, reps: e.min + "-" + e.max, increment_kg: e.inc }))) })) } : null;
+  const recent = list.slice(-12).map(s => ({ date: s.date.slice(0, 10), day: s.dayName, minutes: Math.round((s.durationSec || 0) / 60), exercises: (s.entries || []).map(en => en.name + ": " + setsText(en.sets)) }));
+  const trends = allEx(S.plan).map(e => {
+    const h = history(e.id); if (!h.length) return null;
+    const tops = h.map(x => Math.max(...x.sets.map(s => s.w)));
+    return { id: e.id, name: e.name, sessions: h.length, first: h[0].date.slice(0, 10) + " " + setsText(h[0].sets), last: h[h.length - 1].date.slice(0, 10) + " " + setsText(h[h.length - 1].sets), best_top_kg: Math.max(...tops), app_suggestion: suggest(e).text };
+  }).filter(Boolean);
+  return { today: new Date().toISOString().slice(0, 10), total_sessions: list.length, plan, recent_sessions: recent, exercise_trends: trends };
+}
+const COACH_RULES = "You are the personal strength coach inside the user's workout app \"دفتر الحديد\". The user trains a push/pull/legs plan built from supersets on gym machines. " +
+  "Reply in Saudi Arabic dialect, warm and direct, short paragraphs or short bullet lists, no tables. Use kg. Base every claim on the DATA below; if data is missing, say so plainly. " +
+  "The app already applies double progression (raise weight when all sets reach the top of the rep range). Your job: read trends, spot stalls, explain technique, answer questions, and when a plan change is warranted, call propose_plan with the WHOLE plan. " +
+  "Keep each existing exercise's id when it stays the same exercise so its history stays linked. Each group is 1 exercise or a superset of 2 that do not tire the same muscle. Never claim a change was applied; the user taps Apply. " +
+  "For pain or injury, advise stopping that movement and seeing a professional. Use get_exercise_history when you need more than the summary.";
+const COACH_TOOLS = [
+  { name: "get_exercise_history", description: "Returns every logged session for one exercise as lines 'date: weight×reps …'. Use when the trends summary is not enough.",
+    inputSchema: { type: "object", properties: { exercise_id: { type: "string" } }, required: ["exercise_id"] },
+    execute: i => { const h = history(String(i.exercise_id)); if (!h.length) throw new Error("No history for that exercise id."); return h.map(x => x.date.slice(0, 10) + ": " + setsText(x.sets)).join("\n"); } },
+  { name: "propose_plan", description: "Shows the user a full revised plan as a card with Apply and Dismiss buttons. Pass ALL days. Nothing changes until the user taps Apply. Returns a confirmation that the card is shown.",
+    inputSchema: { type: "object", properties: {
+      summary: { type: "string", description: "Short Arabic summary of what changed and why" },
+      days: { type: "array", items: { type: "object", properties: {
+        id: { type: "string" }, name: { type: "string" },
+        groups: { type: "array", description: "Each group is an array of 1 exercise, or 2 for a superset", items: { type: "array", items: { type: "object", properties: {
+          id: { type: "string" }, name: { type: "string" }, sets: { type: "integer" }, min_reps: { type: "integer" }, max_reps: { type: "integer" }, increment_kg: { type: "number" } }, required: ["name", "sets", "min_reps", "max_reps"] } } } },
+        required: ["name", "groups"] } } },
+      required: ["summary", "days"] },
+    execute: i => {
+      const p = normalizePlan(i);
+      const err = validDraft(p); if (err) throw new Error("Plan rejected: " + err);
+      S.pending = { plan: p, summary: String(i.summary || "") };
+      paintPending();
+      return "The proposal card is now on screen with Apply and Dismiss buttons. Briefly tell the user what changed.";
+    } }
+];
+function normalizePlan(i) {
+  const knownEx = new Map(allEx(S.plan).map(e => [e.id, e]));
+  const knownDays = new Set(S.plan ? S.plan.days.map(d => d.id) : []);
+  const days = (Array.isArray(i.days) ? i.days : []).map(d => ({
+    id: d && knownDays.has(String(d.id)) ? String(d.id) : "d" + uid(),
+    name: String((d && d.name) || "").trim(),
+    groups: (Array.isArray(d && d.groups) ? d.groups : []).map(g => (Array.isArray(g) ? g : [g]).filter(Boolean).slice(0, 2)).filter(g => g.length).map(g => ({
+      id: "g" + uid(),
+      ex: g.map(e => {
+        const old = knownEx.get(String(e.id));
+        const n = (v, dflt) => { const x = Math.round(Number(v)); return x > 0 ? x : dflt; };
+        const inc = Number(e.increment_kg);
+        return { id: old ? old.id : "x" + uid(), name: String(e.name || "").trim(), sets: n(e.sets, 3), min: n(e.min_reps, 8), max: n(e.max_reps, 12), inc: inc > 0 ? inc : (old ? old.inc : 2.5) };
+      })
+    }))
+  }));
+  return { rest: (S.plan && S.plan.rest) || 90, days };
+}
+function pendingHtml() {
+  const P = S.pending; if (!P) return "";
+  return '<div class="card proposal"><span class="eyebrow">تعديل مقترح على الخطة</span><p style="margin:0">' + esc(P.summary) + "</p>" +
+    P.plan.days.map(d => '<div><b>' + esc(d.name) + "</b><ul>" + d.groups.map(g => '<li class="ex-name">' + g.ex.map(e => esc(e.name) + ' <span class="muted num">' + e.sets + "×" + e.min + "–" + e.max + "</span>").join(" + ") + "</li>").join("") + "</ul></div>").join("") +
+    '<div class="row"><button class="btn primary" data-act="applyPlan">طبّق التعديل</button><button class="btn ghost" data-act="dismissPlan">تجاهل</button></div></div>';
+}
+function paintPending() { const el = document.getElementById("pendingBox"); if (el) el.innerHTML = pendingHtml(); }
+const COACH_ERR = { not_granted: "لازم توافق على استخدام Claude عشان يشتغل المدرب.", rate_limited: "طلبات كثيرة ورا بعض. انتظر دقيقة وجرّب.", prompt_too_large: "المحادثة طويلة. امسحها وابدأ من جديد.", session_expired: "انتهت الجلسة. افتح الصفحة من جديد.", sampling_disabled: "استخدام Claude من الصفحات مقفل في حسابك.", refused: "ما قدر يجاوب على هالطلب." };
+const coachErr = c => COACH_ERR[c] || "صار خطأ في الاتصال. جرّب مرة ثانية.";
+async function saveChat() {
+  S.chat = S.chat.slice(-40);
+  if (S.mode === "db") { try { await S.db.doc("chat/main").set({ msgs: S.chat, updatedAt: new Date().toISOString() }); } catch (e) {} }
+  else lsSet("gv.chat", S.chat);
+}
+async function sendCoach(text) {
+  text = String(text || "").trim();
+  if (!text || S.coachBusy || !S.sample) return;
+  S.chat.push({ role: "user", content: text }); S.coachDraft = ""; S.coachBusy = true; S.coachLive = "";
+  render(); scrollEnd();
+  const ctl = new AbortController(); S.coachCtl = ctl;
+  const turns = [{ role: "user", content: COACH_RULES + "\n\nDATA (JSON):\n" + JSON.stringify(coachContext()) }].concat(S.chat.slice(-16));
+  try {
+    const r = await S.sample(turns, { cache: false, signal: ctl.signal, tools: COACH_TOOLS, onText: ({ text }) => { S.coachLive = text; const el = document.getElementById("live"); if (el) { el.innerHTML = md(text); scrollEnd(); } } });
+    S.chat.push({ role: "assistant", content: r.text });
+  } catch (e) {
+    if (e && e.text) S.chat.push({ role: "assistant", content: e.text });
+    if (e && e.code !== "cancelled") toast(coachErr(e.code));
+  } finally {
+    S.coachBusy = false; S.coachCtl = null; S.coachLive = "";
+    await saveChat(); render(); scrollEnd();
+  }
+}
+function scrollEnd() { if (S.view === "coach") window.scrollTo(0, document.documentElement.scrollHeight); }
+const STARTERS = ["حلّل تطوري في آخر ٤ أسابيع", "وش التمارين اللي أنا عالق فيها؟", "عدّل الخطة لأني أقدر أتمرن ٤ أيام بس", "اشرح لي تكنيك الهاك سكوات"];
+function viewCoach() {
+  let h = '<section class="card coach-head"><span class="eyebrow">مدربك الشخصي</span><h2>المدرب</h2><p class="small muted" style="margin:0">يشوف خطتك وكل جلساتك، يحلل تطورك، يشرح التكنيك، ويقترح تعديلات على الخطة تطبقها بضغطة.</p></section>';
+  if (S.sampleState === "loading") return h + '<div class="card empty"><p>نجهّز المدرب…</p></div>';
+  if (S.sampleState === "none") {
+    return h + '<div class="card" style="display:flex;flex-direction:column;gap:10px"><b>المدرب يشتغل داخل نسخة Claude</b>' +
+      '<p class="small muted" style="margin:0">هالنسخة ما تقدر تكلم Claude مباشرة. افتح نسخة Claude (بياناتها منفصلة عن هالجهاز)، أو انسخ تقريرك والصقه لـ Claude في أي محادثة.</p>' +
+      '<div class="row"><a class="btn primary" href="' + ARTIFACT_URL + '" target="_blank" rel="noopener">افتح نسخة Claude</a><button class="btn" data-act="copyReport">انسخ تقرير للمدرب</button></div></div>';
+  }
+  h += '<div class="chat" id="chat">';
+  if (!S.chat.length) h += '<div class="msg bot"><p>هلا! أنا مدربك. اسألني عن تطورك، أو عن تكنيك أي تمرين، أو اطلب تعديل على خطتك.</p></div>';
+  S.chat.forEach(m => { h += '<div class="msg ' + (m.role === "user" ? "user" : "bot") + '">' + (m.role === "user" ? "<p>" + esc(m.content).replace(/\n/g, "<br>") + "</p>" : md(m.content)) + "</div>"; });
+  if (S.coachBusy) h += '<div class="msg bot" id="live">' + (S.coachLive ? md(S.coachLive) : '<p class="muted">يفكر… <span class="dots"></span></p>') + "</div>";
+  h += '</div><div id="pendingBox">' + pendingHtml() + "</div>";
+  if (!S.chat.length && !S.coachBusy) h += '<div class="chips">' + STARTERS.map(t => '<button class="chip" data-act="starter" data-t="' + esc(t) + '">' + esc(t) + "</button>").join("") + "</div>";
+  h += '<form class="composer" id="composer"><textarea id="coachIn" rows="1" placeholder="اكتب سؤالك للمدرب…" aria-label="رسالتك للمدرب">' + esc(S.coachDraft) + "</textarea>" +
+    (S.coachBusy ? '<button type="button" class="btn" data-act="stopCoach">إيقاف</button>' : '<button type="submit" class="btn primary">إرسال</button>') + "</form>";
+  if (S.chat.length && !S.coachBusy) h += '<div class="row"><button class="btn sm ghost ' + (S.armed === "clearChat" ? "danger armed" : "") + '" data-act="clearChat">' + (S.armed === "clearChat" ? "اضغط مرة ثانية لمسح المحادثة" : "امسح المحادثة") + "</button></div>";
+  return h;
+}
+function reportText() {
+  return "أنا أتمرن بخطة بوش بول ليج بالسوبر ست وأسجل في تطبيق دفتر الحديد. هذي بياناتي، حللها وقل لي وش أعدل في خطتي:\n\n" + JSON.stringify(coachContext(), null, 1);
+}
+
+/* ---------- technique sheet ---------- */
+async function loadTech(id) {
+  if (TECH[id] || S.techCache[id] !== undefined || S.mode !== "db") return;
+  S.techCache[id] = null;
+  try { const snap = await S.db.doc("tech/" + id).get(); if (snap.exists) { S.techCache[id] = snap.data(); renderOverlay(); } } catch (e) {}
+}
+async function genTech(id) {
+  if (!S.sample || S.techBusy) return;
+  const name = exName(id); S.techBusy = id; renderOverlay();
+  try {
+    const t = await S.sample.json("Write gym technique notes in Saudi Arabic dialect for the exercise \"" + name + "\". Reply with only JSON: {\"steps\": [3-4 short strings, in order], \"tips\": [2 short strings], \"avoid\": [2 short common mistakes]}.", { modelTier: "default" });
+    const clean = k => (Array.isArray(t && t[k]) ? t[k] : []).map(String).slice(0, 5);
+    const data = { steps: clean("steps"), tips: clean("tips"), avoid: clean("avoid"), name };
+    if (!data.steps.length) throw new Error("empty");
+    S.techCache[id] = data;
+    try { await S.db.doc("tech/" + id).set(data); } catch (e) {}
+  } catch (e) { toast(e && e.code ? coachErr(e.code) : "ما قدرت أجيب الشرح. جرّب مرة ثانية."); }
+  S.techBusy = null; renderOverlay();
+}
+function techHtml(id) {
+  const t = TECH[id] || S.techCache[id];
+  if (t) {
+    const list = (title, arr, cls) => arr && arr.length ? '<div class="tech-sec ' + cls + '"><b>' + title + "</b>" + (cls === "steps" ? "<ol>" : "<ul>") + arr.map(x => "<li>" + esc(x) + "</li>").join("") + (cls === "steps" ? "</ol>" : "</ul>") + "</div>" : "";
+    return '<div class="tech">' + list("طريقة الأداء", t.steps, "steps") + list("نصائح", t.tips, "tips") + list("أخطاء شائعة", t.avoid, "avoid") +
+      '<p class="small muted" style="margin:0">الإيقاع: نزول بطيء ٢–٣ ثواني، وطلوع بقوة وتحكم.</p></div>';
+  }
+  if (S.techBusy === id) return '<div class="note">نجهّز الشرح… <span class="dots"></span></div>';
+  if (S.sample) return '<button class="btn" data-act="genTech" data-ex="' + esc(id) + '">اشرح لي طريقة الأداء</button>';
+  return '<div class="note small">ما فيه شرح جاهز لهالتمرين. اسأل المدرب في نسخة Claude.</div>';
+}
+
 /* ---------- render ---------- */
 const app = document.getElementById("app");
 function render() {
@@ -456,6 +680,7 @@ function render() {
   if (!S.ready) body = '<div class="card empty"><h2>نجهز دفترك</h2><p>نحمّل خطتك وسجل تمارينك.</p></div>' + (S.note ? '<div class="note warn">' + esc(S.note) + "</div>" : "");
   else if (S.view === "prog") body = viewProg();
   else if (S.view === "plan") body = viewPlan();
+  else if (S.view === "coach") body = viewCoach();
   else body = S.active ? viewWorkout() : viewToday();
   const dot = S.mode === "db" ? '<span class="dot on"></span>محفوظ في حسابك' : S.mode === "local" ? '<span class="dot local"></span>محفوظ في هالجهاز' : '<span class="dot"></span>جاري التحميل';
   app.innerHTML =
@@ -463,7 +688,7 @@ function render() {
     (S.ready && S.note ? '<div class="note warn">' + esc(S.note) + "</div>" : "") +
     body +
     '<nav class="nav" aria-label="التنقل"><div class="nav-in">' +
-      navBtn("today", S.active ? "التمرين الحالي" : "اليوم", ICON.today) + navBtn("prog", "التطور", ICON.prog) + navBtn("plan", "الخطة", ICON.plan) +
+      navBtn("today", S.active ? "التمرين الحالي" : "اليوم", ICON.today) + navBtn("prog", "التطور", ICON.prog) + navBtn("coach", "المدرب", ICON.coach) + navBtn("plan", "الخطة", ICON.plan) +
     "</div></nav>" +
     (S.view === "plan" && S.ready ? '<div class="savebar" id="savebar"' + (S.dirty ? "" : " hidden") + '><span>عندك تعديلات ما انحفظت</span><button class="btn sm" data-act="revert">تراجع</button><button class="btn primary sm" data-act="savePlan">احفظ الخطة</button></div>' : "") +
     '<div id="restbox"></div>';
@@ -497,7 +722,7 @@ function viewToday() {
     g.ex.forEach((ex, ei) => {
       const sg = suggest(ex);
       const lh = history(ex.id), ls = lh.length ? lh[lh.length - 1].sets : null;
-      h += '<div class="ex"><div class="ex-h">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(ex.name) + '</div><div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div>" +
+      h += '<div class="ex"><div class="ex-h">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(ex.name) + '</div><div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div>" + techBtn(ex) +
         (ls ? '<div class="last">آخر وزن: <b class="num">' + fmt(Math.max(...ls.map(x => x.w))) + "</b> كغ · <span class=\"num\">" + esc(setsText(ls)) + "</span></div>" : "") + "</div></div>" +
         '<div class="sug"><span class="pill ' + sg.kind + '">' + KIND[sg.kind] + "</span><span>" + esc(sg.text) + "</span></div></div>";
     });
@@ -525,7 +750,7 @@ function viewWorkout() {
       const last = hist.length ? hist[hist.length - 1] : null;
       const rows = A.log[ex.id] || [], pv = (A.prev && A.prev[ex.id]) || [];
       const allDone = rows.length && rows.every(x => x.done), better = allDone && exImproved(A, ex.id);
-      h += '<div class="ex"><div class="ex-h">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(ex.name) + '</div><div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div>" +
+      h += '<div class="ex"><div class="ex-h">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(ex.name) + '</div><div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div>" + techBtn(ex) +
         (better ? '<span class="fire' + (S.fresh === ex.id + ":done" ? " fresh" : "") + '">↑ تحسنت عن آخر مرة</span>' : "") + "</div></div>" +
         '<div class="sug"><span class="pill ' + sg.kind + '">' + KIND[sg.kind] + "</span><span>" + esc(sg.text) + "</span></div>" +
         (last ? '<div class="last">آخر جلسة: ' + esc(dateFmt(last.date)) + "</div>" : "") +
@@ -677,12 +902,14 @@ function renderOverlay() {
   const o = document.getElementById("overlay");
   if (S.photoView) {
     const id = S.photoView, src = photoGet(id), stock = !src && STOCK.has(id);
+    loadTech(id);
     o.innerHTML = '<div class="scrim" data-act="closeOv"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="phh">' +
-      '<span class="eyebrow">صورة الجهاز</span><h2 id="phh" class="ex-name" style="font-family:var(--f-body);font-size:18px">' + esc(exName(id)) + "</h2>" +
-      (src ? '<img class="viewer-img" src="' + src + '" alt="">' : "") +
-      (stock ? '<div class="stock"><figure><img class="viewer-img" src="' + stockSrc(id, 0) + '" alt=""><figcaption>البداية</figcaption></figure><figure><img class="viewer-img" src="' + stockSrc(id, 1) + '" alt=""><figcaption>النهاية</figcaption></figure></div>' +
-        '<p class="small muted" style="margin:0">صورة توضيحية للحركة. جهاز ناديك ممكن يختلف شكله، وتقدر تصوّره وتحط صورته بدالها.</p>' : "") +
-      '<div class="row"><button class="btn primary" data-act="photoChange" data-ex="' + esc(id) + '">' + (src ? "غيّر الصورة" : "صوّر جهاز ناديك") + "</button>" +
+      '<span class="eyebrow">التمرين</span><h2 id="phh" class="ex-name" style="font-family:var(--f-body);font-size:19px;font-weight:700">' + esc(exName(id)) + "</h2>" +
+      (src ? '<img class="viewer-img" src="' + src + '" alt="صورة جهاز ناديك">' : "") +
+      (stock ? '<div class="stock"><figure><img class="viewer-img" src="' + stockSrc(id, 0) + '" alt=""><figcaption>البداية</figcaption></figure><figure><img class="viewer-img" src="' + stockSrc(id, 1) + '" alt=""><figcaption>النهاية</figcaption></figure></div>' : "") +
+      (!src && !stock ? '<button class="addphoto" data-act="photoChange" data-ex="' + esc(id) + '">' + ICON.cam + "أضف صورة الجهاز</button>" : "") +
+      techHtml(id) +
+      '<div class="row"><button class="btn" data-act="photoChange" data-ex="' + esc(id) + '">' + (src ? "غيّر الصورة" : "صوّر جهاز ناديك") + "</button>" +
       (src ? '<button class="btn danger ' + (S.armed === "photo:" + id ? "armed" : "") + '" data-act="photoDel" data-ex="' + esc(id) + '">' + (S.armed === "photo:" + id ? "اضغط مرة ثانية للحذف" : (STOCK.has(id) ? "ارجع للصورة التوضيحية" : "احذف الصورة")) + "</button>" : "") +
       '<button class="btn ghost" data-act="closeOv">إغلاق</button></div></div></div>';
     return;
@@ -826,6 +1053,7 @@ app.addEventListener("input", e => {
     return;
   }
   if (t.id === "backup") { S.exportText = t.value; return; }
+  if (t.id === "coachIn") { S.coachDraft = t.value; t.style.height = "auto"; t.style.height = Math.min(140, t.scrollHeight) + "px"; return; }
   const pf = t.dataset.pf; if (!pf || !S.draft) return;
   const D = S.draft;
   if (pf === "rest") D.rest = Math.max(15, parseInt(t.value, 10) || 90);
@@ -836,6 +1064,12 @@ app.addEventListener("input", e => {
     else { const v = parseFloat(t.value); ex[pf] = isNaN(v) ? 0 : (pf === "inc" ? v : Math.round(v)); }
   }
   markDirty();
+});
+app.addEventListener("submit", e => {
+  if (e.target.id !== "composer") return;
+  e.preventDefault();
+  const ta = document.getElementById("coachIn");
+  sendCoach(ta ? ta.value : S.coachDraft);
 });
 app.addEventListener("change", e => {
   if (e.target.dataset.in === "progEx") { S.progEx = e.target.value; render(); }
@@ -858,7 +1092,22 @@ document.addEventListener("click", async e => {
     case "rest15": if (S.rest) { S.rest.end = Math.max(S.rest.end, Date.now()) + 15000; S.rest.fired = false; renderRest(); } break;
     case "restSkip": S.rest = null; renderRest(); break;
     case "closeOv": S.summary = null; S.photoView = null; renderOverlay(); break;
-    case "photo": if (photoGet(b.dataset.ex) || STOCK.has(b.dataset.ex)) { S.photoView = b.dataset.ex; renderOverlay(); } else pickPhoto(b.dataset.ex); break;
+    case "photo": S.photoView = b.dataset.ex; renderOverlay(); break;
+    case "genTech": genTech(b.dataset.ex); break;
+    case "starter": sendCoach(b.dataset.t); break;
+    case "stopCoach": if (S.coachCtl) S.coachCtl.abort(); break;
+    case "clearChat": if (prevArmed === "clearChat") { S.chat = []; S.pending = null; await saveChat(); } else S.armed = "clearChat"; render(); break;
+    case "dismissPlan": S.pending = null; paintPending(); break;
+    case "applyPlan": {
+      if (!S.pending) break;
+      try { await putPlan(S.pending.plan); S.pending = null; S.draft = null; S.dirty = false; S.chat.push({ role: "assistant", content: "✓ طبّقت الخطة الجديدة. تلقاها في تبويب الخطة واليوم." }); await saveChat(); toast("تم تطبيق الخطة"); } catch (x) { writeErr(x); }
+      render(); scrollEnd(); break;
+    }
+    case "copyReport": {
+      const txt = reportText();
+      try { await navigator.clipboard.writeText(txt); toast("انسخ التقرير. الصقه لـ Claude."); } catch (x) { toast("ما قدرت أنسخ. جرّب من نسخة Claude."); }
+      break;
+    }
     case "photoChange": pickPhoto(b.dataset.ex); break;
     case "photoDel": if (prevArmed === "photo:" + b.dataset.ex) { photoSet(b.dataset.ex, ""); S.photoView = null; toast("انحذفت الصورة"); render(); } else { S.armed = "photo:" + b.dataset.ex; renderOverlay(); } break;
     case "metric": S.progMetric = b.dataset.v; render(); break;
