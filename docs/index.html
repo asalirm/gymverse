@@ -238,6 +238,30 @@ input,select,textarea{font:inherit;color:var(--ink)}
 .mchip.p{background:var(--accent-soft);color:var(--accent)}
 .mchip.s{background:var(--surface-2);color:var(--muted)}
 
+/* notes, weekly volume, body */
+.exlinks{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center}
+.techbtn.subtle{color:var(--muted);font-weight:500}
+.exnote{display:inline-flex;align-items:flex-start;gap:6px;background:var(--plate-soft);color:var(--plate-ink);border:0;border-radius:10px;padding:5px 10px;font-size:13px;font-weight:600;text-align:right;margin-top:2px;line-height:1.4}
+.exnote svg{width:15px;height:15px;flex:none;margin-top:2px}
+.note-ed{display:flex;flex-direction:column;gap:6px}
+.note-ed textarea{width:100%;min-height:64px;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg);font-size:15px;resize:vertical}
+.note-ed textarea:focus{border-color:var(--plate);outline:none}
+.vol,.body-card{display:flex;flex-direction:column;gap:12px}
+.vrows{display:flex;flex-direction:column;gap:9px}
+.vrow{display:grid;grid-template-columns:88px 1fr 34px 54px;gap:8px;align-items:center;font-size:13px}
+.vname{font-weight:600;overflow-wrap:anywhere;line-height:1.25}
+.vtrack{position:relative;height:12px;border-radius:6px;background:var(--surface-2);overflow:hidden}
+.vzone{position:absolute;top:0;bottom:0;background:var(--good-soft);border-inline:1.5px dashed var(--good)}
+.vfill{position:absolute;inset-inline-start:0;top:3px;bottom:3px;border-radius:4px}
+.vfill.ok{background:var(--good)}.vfill.low{background:var(--muted)}.vfill.high{background:var(--warn)}
+.vval{text-align:center;font-weight:700}
+.vrow .pill{justify-content:center}
+.body-form{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.body-form label{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--muted);font-weight:600}
+.body-form input{height:40px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:0 8px;font-size:15px;min-width:0;width:100%}
+.body-form .btn{grid-column:1 / -1}
+.big{font-family:var(--f-display);font-size:30px;font-weight:800}
+
 /* rest timer */
 .rest{position:fixed;z-index:7;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(72px + env(safe-area-inset-bottom,0px));
   max-width:596px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 28px rgba(0,0,0,.25)}
@@ -275,6 +299,7 @@ select.inp{width:100%;height:44px;border:1px solid var(--line);background:var(--
 .ex-ed .nm{width:100%;height:40px;border:1px solid var(--line);background:var(--bg);border-radius:var(--r-sm);padding:0 10px;direction:ltr;text-align:left}
 .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .nums label{display:flex;flex-direction:column;gap:2px;font-size:11.5px;color:var(--muted);font-weight:600}
+.nums select{height:38px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:0 6px;font-size:15px;width:100%;min-width:0}
 .nums input{height:38px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:0 6px;text-align:center;font-family:var(--f-num);font-size:15px;width:100%;min-width:0}
 .savebar{position:fixed;z-index:7;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(72px + env(safe-area-inset-bottom,0px));max-width:596px;margin:0 auto;
   background:var(--surface);border:1px solid var(--accent);border-radius:var(--r);padding:10px 12px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 28px rgba(0,0,0,.18)}
@@ -333,6 +358,7 @@ const ICON = {
   cam: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
   coach: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg>',
   book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C6.5 4 9.5 4 12 5.5 14.5 4 17.5 4 20 5.5V19c-2.5-1.5-5.5-1.5-8 0-2.5-1.5-5.5-1.5-8 0z"/><path d="M12 5.5V19"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>',
   tick: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
 };
 
@@ -362,7 +388,7 @@ const S = {
   db: null, plan: null, sessions: [], ready: false, note: "",
   view: "today", pickDay: null, active: lsGet("gv.active"),
   draft: null, dirty: false, armed: null,
-  fresh: null, assets: null, photoMap: {}, photosLoaded: false, migrated: false, gymPhotos: [], gpBusy: null, calMonth: null, calDay: null, chat: [], coachBusy: false, coachLive: "", coachDraft: "", coachCtl: null, pending: null, sample: null, sampleState: "loading", techCache: {}, techBusy: null, progEx: null, progMetric: "e1rm", openSess: null, rest: null, summary: null, photoView: null, exportText: ""
+  fresh: null, notes: {}, body: [], volWeek: 0, bodyMetric: "w", bodyForm: false, assets: null, photoMap: {}, photosLoaded: false, migrated: false, gymPhotos: [], gpBusy: null, calMonth: null, calDay: null, chat: [], coachBusy: false, coachLive: "", coachDraft: "", coachCtl: null, pending: null, sample: null, sampleState: "loading", techCache: {}, techBusy: null, progEx: null, progMetric: "e1rm", openSess: null, rest: null, summary: null, photoView: null, exportText: ""
 };
 try { const v = lsGet("gv.view"); if (v === "today" || v === "prog" || v === "plan" || v === "coach") S.view = v; } catch (e) {}
 
@@ -383,7 +409,7 @@ async function boot() {
     }).catch(() => {});
     db.doc("chat/main").get().then(sn => { if (sn.exists && Array.isArray(sn.data().msgs) && !S.chat.length) { S.chat = sn.data().msgs.slice(-40); if (S.view === "coach") render(); } }).catch(() => {});
   } else {
-    S.mode = "local"; S.plan = lsGet("gv.plan"); S.sessions = lsGet("gv.sessions") || []; S.chat = lsGet("gv.chat") || []; S.ready = true; render();
+    S.mode = "local"; S.plan = lsGet("gv.plan"); S.sessions = lsGet("gv.sessions") || []; S.chat = lsGet("gv.chat") || []; S.notes = lsGet("gv.notes") || {}; S.body = lsGet("gv.body") || []; S.ready = true; render();
   }
   let smp = null;
   if (window.claude && typeof window.claude.use === "function") { try { smp = await window.claude.use("sample"); } catch (e) { smp = null; } }
@@ -403,6 +429,8 @@ function subscribe() {
   const onErr = () => { clearTimeout(timer); S.note = "انقطع الاتصال بالبيانات. افتح الصفحة من جديد بعد شوي."; S.ready = true; render(); };
   S.db.doc("gym/plan").onSnapshot(snap => { S.plan = snap.exists ? snap.data() : null; gotPlan = true; settle(); }, onErr);
   S.db.collection("photos").onSnapshot(qs => { const m = {}; qs.docs.forEach(d => { const v = d.data(); if (v && v.asset) m[d.id] = v.asset; }); S.photoMap = m; S.photosLoaded = true; maybeMigrate(); if (S.ready) softRender(); }, () => {});
+  S.db.collection("notes").onSnapshot(qs => { const m = {}; qs.docs.forEach(d => { const v = d.data(); if (v && v.text) m[d.id] = v.text; }); S.notes = m; if (S.ready) softRender(); }, () => {});
+  S.db.collection("body").onSnapshot(qs => { S.body = qs.docs.map(d => d.data()).filter(Boolean); if (S.ready) softRender(); }, () => {});
   S.db.collection("tech").onSnapshot(qs => { qs.docs.forEach(d => { S.techCache[d.id] = d.data(); }); if (S.ready) softRender(); }, () => {});
   S.db.collection("gymphotos").onSnapshot(qs => { S.gymPhotos = qs.docs.map(d => Object.assign({ id: d.id }, d.data())).sort((a, b) => (a.at < b.at ? -1 : 1)); if (S.ready && S.view === "plan") softRender(); }, () => {});
   S.db.collection("sessions").onSnapshot(qs => { S.sessions = qs.docs.map(d => d.data()).filter(Boolean); gotSess = true; settle(); }, onErr);
@@ -621,7 +649,7 @@ function coachContext() {
     const tops = h.map(x => Math.max(...x.sets.map(s => s.w)));
     return { id: e.id, name: e.name, sessions: h.length, first: h[0].date.slice(0, 10) + " " + setsText(h[0].sets), last: h[h.length - 1].date.slice(0, 10) + " " + setsText(h[h.length - 1].sets), best_top_kg: Math.max(...tops), app_suggestion: suggest(e).text };
   }).filter(Boolean);
-  return { today: new Date().toISOString().slice(0, 10), body_weight_kg: bodyW() || null, total_sessions: list.length, plan, recent_sessions: recent, exercise_trends: trends };
+  return { today: new Date().toISOString().slice(0, 10), body_weight_kg: bodyW() || null, height_cm: (S.plan && S.plan.height) || null, age: (S.plan && S.plan.age) || null, body_log: bodySorted().slice(-10).map(x => { const o = { date: x.date.slice(0, 10) }; BODY_FIELDS.forEach(([k]) => { if (x[k]) o[k] = x[k]; }); return o; }), machine_notes: S.notes, total_sessions: list.length, plan, recent_sessions: recent, exercise_trends: trends };
 }
 const COACH_RULES = "You are the personal strength coach inside the user's workout app \"دفتر الحديد\". The user trains a push/pull/legs plan built from supersets on gym machines. " +
   "Reply in Saudi Arabic dialect, warm and direct, short paragraphs or short bullet lists, no tables. Use kg. Base every claim on the DATA below; if data is missing, say so plainly. " +
@@ -665,7 +693,8 @@ function normalizePlan(i) {
       })
     }))
   }));
-  return { rest: (S.plan && S.plan.rest) || 90, bw: (S.plan && S.plan.bw) || 0, days };
+  const P = S.plan || {};
+  return { rest: P.rest || 90, bw: P.bw || 0, height: P.height || 0, age: P.age || 0, sex: P.sex || "m", days };
 }
 function pendingHtml() {
   const P = S.pending; if (!P) return "";
@@ -760,7 +789,7 @@ const MET = 5; // resistance training in supersets, moderate-to-vigorous effort
 const timeFmt = iso => { try { return new Date(iso).toLocaleTimeString("ar-SA-u-nu-latn-ca-gregory", { hour: "numeric", minute: "2-digit" }); } catch (e) { return ""; } };
 const sessEnd = s => s.endedAt || new Date(new Date(s.date).getTime() + (s.durationSec || 0) * 1000).toISOString();
 const bodyW = () => (S.plan && S.plan.bw > 0 ? S.plan.bw : 0);
-const kcalFor = sec => (bodyW() ? Math.round(MET * bodyW() * sec / 3600) : null);
+const kcalFor = sec => { const b = bmr(); if (b) return Math.round(MET * b / 24 * sec / 3600); return bodyW() ? Math.round(MET * bodyW() * sec / 3600) : null; };
 const sessKcal = s => (s.kcal != null ? s.kcal : kcalFor(s.durationSec || 0));
 const canCloud = () => !!(S.assets && S.mode === "db");
 function softRender() { const a = document.activeElement; if (a && app.contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return; render(); }
@@ -867,6 +896,125 @@ function calendarHtml(list) {
   return h + "</section>";
 }
 
+/* ---------- machine notes ---------- */
+const noteOf = id => (S.notes[id] || "").trim();
+function noteLine(id) {
+  const n = noteOf(id);
+  return n ? '<button class="exnote" data-act="photo" data-ex="' + esc(id) + '">' + ICON.pin + "<span>" + esc(n) + "</span></button>"
+    : '<button class="techbtn subtle" data-act="photo" data-ex="' + esc(id) + '">' + ICON.pin + "أضف إعدادات الجهاز</button>";
+}
+function noteEditor(id) {
+  return '<div class="note-ed"><label for="noteIn"><b>إعدادات الجهاز وملاحظاتك</b></label>' +
+    '<textarea id="noteIn" data-note="' + esc(id) + '" rows="2" placeholder="مثلاً: المقعد رقم 4، الظهر رقم 2، المقابض الواسعة">' + esc(S.notes[id] || "") + "</textarea>" +
+    '<span class="small muted">تنحفظ تلقائياً وتطلع لك تحت اسم التمرين.</span></div>';
+}
+let noteT = 0, notePending = null;
+function queueNote(id, text) { S.notes[id] = text; notePending = id; clearTimeout(noteT); noteT = setTimeout(() => saveNote(id), 700); }
+function flushNote() { if (notePending) saveNote(notePending); }
+async function saveNote(id) {
+  clearTimeout(noteT); if (notePending === id) notePending = null;
+  const text = (S.notes[id] || "").trim();
+  if (S.mode === "db") { try { if (text) await S.db.doc("notes/" + id).set({ text, at: new Date().toISOString() }); else await S.db.doc("notes/" + id).delete(); } catch (e) { writeErr(e); } }
+  else lsSet("gv.notes", S.notes);
+}
+
+/* ---------- weekly sets per muscle ---------- */
+const GROUPS = [["أسفل الظهر", "أسفل الظهر"], ["الصدر", "الصدر"], ["مقدمة الكتف", "كتف أمامي"], ["الكتف الجانبي", "كتف جانبي"], ["خلفي الكتف", "كتف خلفي"],
+  ["الترابيس", "الترابيس"], ["التراي", "التراي"], ["الباي", "الباي"], ["البراكياليس", "الساعد"], ["الساعد", "الساعد"], ["المجنص", "الظهر"], ["اللاتس", "الظهر"],
+  ["منتصف الظهر", "الظهر"], ["أعلى الظهر", "الظهر"], ["المعينية", "الظهر"], ["الفخذ الأمامي", "الفخذ الأمامي"], ["الخلفية", "الخلفية"], ["المؤخرة", "المؤخرة"],
+  ["الفخذ الداخلي", "الفخذ الداخلي"], ["الضامة", "الفخذ الداخلي"], ["السمانة", "السمانة"], ["النعلية", "السمانة"]];
+const SMALL = new Set(["كتف أمامي", "كتف خلفي", "الترابيس", "الساعد", "أسفل الظهر", "الفخذ الداخلي", "السمانة"]);
+const groupOf = name => { for (const [k, g] of GROUPS) if (name.includes(k)) return g; return name; };
+const rangeOf = g => (SMALL.has(g) ? [6, 16] : [10, 20]);
+function weekStart(offset) { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 1) % 7 + offset * 7); return d; }
+function addSets(vol, m, n) {
+  const seen = {};
+  m.p.forEach(x => { const g = groupOf(x); if (seen[g]) return; seen[g] = 1; vol[g] = (vol[g] || 0) + n; });
+  m.s.forEach(x => { const g = groupOf(x); if (seen[g]) return; seen[g] = 1; vol[g] = (vol[g] || 0) + n * 0.5; });
+}
+function volumeHtml() {
+  const st = weekStart(S.volWeek), en = new Date(st); en.setDate(en.getDate() + 7);
+  const vol = {}, unknown = new Set(); let count = 0;
+  allEx(S.plan).forEach(e => { const m = musclesFor(e.id); if (m) m.p.forEach(x => { vol[groupOf(x)] = vol[groupOf(x)] || 0; }); });
+  sorted().forEach(s => {
+    const t = new Date(s.date); if (t < st || t >= en) return; count++;
+    (s.entries || []).forEach(x => { const m = musclesFor(x.exId); if (m) addSets(vol, m, x.sets.length); else unknown.add(x.name); });
+  });
+  const rows = Object.entries(vol).sort((a, b) => b[1] - a[1]);
+  const top = Math.max(24, ...rows.map(r => r[1]));
+  const last = new Date(en); last.setDate(last.getDate() - 1);
+  let h = '<section class="card vol"><div class="spread"><button class="btn sm ghost" data-act="volMove" data-dir="-1" aria-label="الأسبوع اللي قبل">→</button><div style="text-align:center"><h3 style="margin:0">الجولات الأسبوعية لكل عضلة</h3><span class="small muted">' +
+    esc(dateFmt(st.toISOString(), { day: "numeric", month: "short" })) + " – " + esc(dateFmt(last.toISOString(), { day: "numeric", month: "short" })) + " · " + count + " تمرين</span></div>" +
+    '<button class="btn sm ghost" data-act="volMove" data-dir="1" aria-label="الأسبوع اللي بعده"' + (S.volWeek >= 0 ? " disabled" : "") + ">←</button></div>";
+  if (!rows.length) return h + '<p class="small muted" style="margin:0">ما فيه تمارين بعضلات محددة.</p></section>';
+  h += '<div class="vrows">' + rows.map(([g, v]) => {
+    const [lo, hi] = rangeOf(g), st2 = v < lo ? "low" : v > hi ? "high" : "ok";
+    return '<div class="vrow"><span class="vname">' + esc(g) + '</span><div class="vtrack"><i class="vzone" style="inset-inline-start:' + (lo / top * 100) + "%;width:" + ((hi - lo) / top * 100) + '%"></i><i class="vfill ' + st2 + '" style="width:' + Math.min(100, v / top * 100) + '%"></i></div>' +
+      '<span class="vval num">' + fmt(v) + '</span><span class="pill ' + (st2 === "ok" ? "up" : st2 === "low" ? "new" : "down") + '">' + (st2 === "ok" ? "مناسب" : st2 === "low" ? "أقل" : "عالي") + "</span></div>";
+  }).join("") + "</div>";
+  h += '<p class="small muted" style="margin:0">المنطقة المظللة هي النطاق المناسب لبناء العضل (١٠–٢٠ جولة للعضلات الكبيرة، ٦–١٦ للصغيرة). العضلة الأساسية تنحسب جولة كاملة، والمساندة نص جولة.' +
+    (unknown.size ? " تمارين ما لها عضلات محددة: " + esc([...unknown].join("، ")) + "." : "") + "</p></section>";
+  return h;
+}
+
+/* ---------- body weight and measurements ---------- */
+const BODY_FIELDS = [["w", "الوزن", "كغ"], ["waist", "الخصر", "سم"], ["chest", "الصدر", "سم"], ["arm", "الذراع", "سم"], ["hip", "الورك", "سم"], ["thigh", "الفخذ", "سم"]];
+const bodySorted = () => S.body.slice().sort((a, b) => (a.date < b.date ? -1 : 1));
+async function putBody(e) {
+  if (S.mode === "db") await S.db.collection("body").doc(e.id).set(e);
+  else { S.body = S.body.filter(x => x.id !== e.id).concat([e]); lsSet("gv.body", S.body); }
+}
+async function dropBody(id) {
+  if (S.mode === "db") await S.db.collection("body").doc(id).delete();
+  S.body = S.body.filter(x => x.id !== id); if (S.mode !== "db") lsSet("gv.body", S.body);
+}
+function bodyHtml() {
+  const list = bodySorted(), withW = list.filter(x => x.w > 0);
+  const lastW = withW.length ? withW[withW.length - 1] : null, firstW = withW.length ? withW[0] : null;
+  let h = '<section class="card body-card"><div class="spread"><h3 style="margin:0">جسمك</h3><button class="btn sm ' + (S.bodyForm ? "" : "primary") + '" data-act="bodyForm">' + (S.bodyForm ? "إلغاء" : "+ سجّل وزنك أو قياساتك") + "</button></div>";
+  if (S.bodyForm) {
+    const today = new Date().toISOString().slice(0, 10);
+    h += '<div class="body-form"><label for="bf-date">التاريخ<input id="bf-date" type="date" value="' + today + '" max="' + today + '"></label>' +
+      BODY_FIELDS.map(([k, l, u]) => '<label for="bf-' + k + '">' + l + " (" + u + ')<input id="bf-' + k + '" type="number" inputmode="decimal" step="0.1" min="0"' + (k === "w" && lastW ? ' placeholder="' + fmt(lastW.w) + '"' : "") + "></label>").join("") +
+      '<button class="btn primary" data-act="bodySave">احفظ</button></div>';
+  }
+  if (!list.length) return h + '<p class="small muted" style="margin:0">سجّل وزنك مرة في الأسبوع، الصبح قبل الأكل، عشان تشوف تطورك. وآخر وزن تسجله يتحدث في حساب السعرات تلقائياً.</p></section>';
+  if (lastW) {
+    const d = lastW.w - firstW.w;
+    h += '<div class="row"><span class="big num">' + fmt(lastW.w) + '</span><span class="muted">كغ · ' + esc(dateFmt(lastW.date)) + "</span>" + (withW.length > 1 ? '<span class="pill ' + (d === 0 ? "new" : "hold") + '">' + (d > 0 ? "+" : "") + fmt(d) + " كغ من أول تسجيل</span>" : "") + "</div>";
+  }
+  const avail = BODY_FIELDS.filter(([k]) => list.some(x => x[k] > 0));
+  if (!avail.some(([k]) => k === S.bodyMetric)) S.bodyMetric = avail.length ? avail[0][0] : "w";
+  if (avail.length > 1) h += '<div class="seg" role="group" aria-label="المقياس">' + avail.map(([k, l]) => '<button data-act="bodyMetric" data-v="' + k + '" aria-pressed="' + (S.bodyMetric === k) + '">' + l + "</button>").join("") + "</div>";
+  const f = BODY_FIELDS.find(x => x[0] === S.bodyMetric), pts = list.filter(x => x[S.bodyMetric] > 0).map(x => ({ date: x.date, v: r1(x[S.bodyMetric]) }));
+  if (pts.length) h += '<div style="overflow-x:auto">' + chart(pts, f[2]) + "</div>";
+  h += '<div class="hist">' + list.slice().reverse().slice(0, 8).map(x => '<div class="hist-row"><span>' + esc(dateFmt(x.date)) + '</span><span class="small">' +
+    BODY_FIELDS.filter(([k]) => x[k] > 0).map(([k, l, u]) => l + ' <b class="num">' + fmt(x[k]) + "</b>").join(" · ") + "</span>" +
+    '<button class="btn sm ghost ' + (S.armed === "body:" + x.id ? "danger armed" : "") + '" data-act="bodyDel" data-id="' + esc(x.id) + '">' + (S.armed === "body:" + x.id ? "متأكد؟" : "حذف") + "</button></div>").join("") + "</div>";
+  return h + "</section>";
+}
+async function saveBodyForm() {
+  const val = k => { const el = document.getElementById("bf-" + k); const v = el ? parseFloat(el.value) : NaN; return v > 0 ? r1(v) : 0; };
+  const dEl = document.getElementById("bf-date"), day = dEl && dEl.value ? dEl.value : new Date().toISOString().slice(0, 10);
+  const e = { id: "b" + uid(), date: new Date(day + "T12:00:00").toISOString() };
+  let any = false; BODY_FIELDS.forEach(([k]) => { const v = val(k); if (v) { e[k] = v; any = true; } });
+  if (!any) { toast("اكتب وزنك أو قياس واحد على الأقل."); return; }
+  if (e.w && (e.w < 25 || e.w > 350)) { toast("الوزن لازم يكون بالكيلو، بين 25 و 350."); return; }
+  try {
+    await putBody(e);
+    const lw = bodySorted().filter(x => x.w > 0).pop();
+    if (lw && lw.id === e.id && S.plan && S.plan.bw !== e.w) { const p = clone(S.plan); p.bw = e.w; await putPlan(p); if (!S.dirty) S.draft = null; }
+    S.bodyForm = false; toast("انحفظ"); render();
+  } catch (x) { writeErr(x); }
+}
+
+/* ---------- calories from body profile ---------- */
+function bmr() {
+  const P = S.plan || {}, w = bodyW();
+  if (!(w > 0 && P.height > 0 && P.age > 0)) return 0;
+  return 10 * w + 6.25 * P.height - 5 * P.age + (P.sex === "f" ? -161 : 5);
+}
+
 /* ---------- render ---------- */
 const app = document.getElementById("app");
 function render() {
@@ -917,7 +1065,7 @@ function viewToday() {
     g.ex.forEach((ex, ei) => {
       const sg = suggest(ex);
       const lh = history(ex.id), ls = lh.length ? lh[lh.length - 1].sets : null;
-      h += '<div class="ex"><div class="ex-h">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(ex.name) + '</div><div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div>" + musLine(ex.id) + techBtn(ex) +
+      h += '<div class="ex"><div class="ex-h">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(ex.name) + '</div><div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div>" + musLine(ex.id) + '<div class="exlinks">' + techBtn(ex) + noteLine(ex.id) + "</div>" +
         (ls ? '<div class="last">آخر وزن: <b class="num">' + fmt(Math.max(...ls.map(x => x.w))) + "</b> كغ · <span class=\"num\">" + esc(setsText(ls)) + "</span></div>" : "") + "</div></div>" +
         '<div class="sug"><span class="pill ' + sg.kind + '">' + KIND[sg.kind] + "</span><span>" + esc(sg.text) + "</span></div></div>";
     });
@@ -946,7 +1094,7 @@ function viewWorkout() {
       const last = hist.length ? hist[hist.length - 1] : null;
       const rows = A.log[ex.id] || [], pv = (A.prev && A.prev[ex.id]) || [];
       const allDone = rows.length && rows.every(x => x.done), better = allDone && exImproved(A, ex.id);
-      h += '<div class="ex"><div class="ex-h">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(ex.name) + '</div><div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div>" + musLine(ex.id) + techBtn(ex) +
+      h += '<div class="ex"><div class="ex-h">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(ex.name) + '</div><div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div>" + musLine(ex.id) + '<div class="exlinks">' + techBtn(ex) + noteLine(ex.id) + "</div>" +
         (better ? '<span class="fire' + (S.fresh === ex.id + ":done" ? " fresh" : "") + '">↑ تحسنت عن آخر مرة</span>' : "") + "</div></div>" +
         '<div class="sug"><span class="pill ' + sg.kind + '">' + KIND[sg.kind] + "</span><span>" + esc(sg.text) + "</span></div>" +
         (last ? '<div class="last">آخر جلسة: ' + esc(dateFmt(last.date)) + "</div>" : "") +
@@ -1013,8 +1161,9 @@ function viewProg() {
   let h = '<div class="tiles"><div class="tile"><b>' + recent.length + "</b><span>تمارين آخر ٧ أيام</span></div>" +
     '<div class="tile"><b>' + list.length + "</b><span>كل الجلسات</span></div>" +
     '<div class="tile"><b>' + (vol7 >= 10000 ? fmt(vol7 / 1000) + "k" : Math.round(vol7)) + "</b><span>الحجم آخر ٧ أيام (كغ)</span></div></div>";
-  h += calendarHtml(list);
+  h += calendarHtml(list) + bodyHtml();
   if (!list.length) return h + '<div class="card empty"><h2>تطورك بيظهر هنا</h2><p>سجّل أول تمرين من تبويب اليوم، وبعدها تشوف رسم لكل تمرين، وأرقامك القياسية، وسجل جلساتك.</p><button class="btn primary" data-act="nav" data-v="today">روح للتمرين</button></div>';
+  h += volumeHtml();
   const known = new Map();
   allEx(S.plan).forEach(e => known.set(e.id, e.name));
   list.forEach(s => (s.entries || []).forEach(en => { if (!known.has(en.exId)) known.set(en.exId, en.name + " (قديم)"); }));
@@ -1055,7 +1204,11 @@ function viewPlan() {
   if (!S.draft) S.draft = clone(S.plan);
   const D = S.draft;
   let h = '<section class="card" style="display:flex;flex-direction:column;gap:10px"><div class="spread"><h3 style="margin:0">إعدادات</h3></div>' +
-    '<div class="nums" style="grid-template-columns:1fr 1fr"><label for="restSec">الراحة بعد كل سوبر ست (ثانية)<input id="restSec" type="number" inputmode="numeric" min="15" max="600" data-pf="rest" value="' + (D.rest || 90) + '"></label><label for="bwIn">وزنك (كغ) لحساب السعرات<input id="bwIn" type="number" inputmode="decimal" min="30" max="300" step="0.5" data-pf="bw" value="' + (D.bw || "") + '" placeholder="مثلاً 80"></label></div>' +
+    '<div class="nums" style="grid-template-columns:1fr 1fr"><label for="restSec">الراحة بعد كل سوبر ست (ثانية)<input id="restSec" type="number" inputmode="numeric" min="15" max="600" data-pf="rest" value="' + (D.rest || 90) + '"></label><label for="bwIn">وزنك (كغ)<input id="bwIn" type="number" inputmode="decimal" min="30" max="300" step="0.5" data-pf="bw" value="' + (D.bw || "") + '" placeholder="مثلاً 80"></label>' +
+    '<label for="htIn">طولك (سم)<input id="htIn" type="number" inputmode="numeric" min="120" max="230" data-pf="height" value="' + (D.height || "") + '" placeholder="مثلاً 175"></label>' +
+    '<label for="ageIn">عمرك<input id="ageIn" type="number" inputmode="numeric" min="12" max="100" data-pf="age" value="' + (D.age || "") + '" placeholder="مثلاً 28"></label>' +
+    '<label for="sexIn">الجنس<select id="sexIn" data-pf="sex"><option value="m"' + (D.sex !== "f" ? " selected" : "") + '>ذكر</option><option value="f"' + (D.sex === "f" ? " selected" : "") + ">أنثى</option></select></label></div>" +
+    '<p class="small muted" style="margin:0">' + (D.bw > 0 && D.height > 0 && D.age > 0 ? "معدل الحرق وأنت مرتاح (BMR) تقريباً <b class=\"num\">" + Math.round(10 * D.bw + 6.25 * D.height - 5 * D.age + (D.sex === "f" ? -161 : 5)) + "</b> سعرة باليوم. السعرات تنحسب عليه (معادلة ميفلين)، وهذا أدق من الوزن لحاله." : "اكتب وزنك وطولك وعمرك عشان تكون السعرات أدق. وزنك يتحدث تلقائياً لما تسجله في تبويب التطور.") + "</p>" +
     '<p class="small muted" style="margin:0">زيادة الوزن لكل تمرين: لما تكمل أعلى عدد عدات في كل الجولات، يقترح عليك الدفتر الوزن الجديد بهالمقدار.</p></section>';
   D.days.forEach((d, di) => {
     h += '<section class="day-ed"><div class="spread"><input id="dn-' + di + '" aria-label="اسم اليوم" data-pf="dayName" data-d="' + di + '" value="' + esc(d.name) + '">' +
@@ -1106,7 +1259,7 @@ function renderOverlay() {
       (src ? '<img class="viewer-img" src="' + src + '" alt="صورة جهاز ناديك">' : "") +
       (stock ? '<div class="stock"><figure><img class="viewer-img" src="' + stockSrc(id, 0) + '" alt=""><figcaption>البداية</figcaption></figure><figure><img class="viewer-img" src="' + stockSrc(id, 1) + '" alt=""><figcaption>النهاية</figcaption></figure></div>' : "") +
       (!src && !stock ? '<button class="addphoto" data-act="photoChange" data-ex="' + esc(id) + '">' + ICON.cam + "أضف صورة الجهاز</button>" : "") +
-      musSheet(id) + techHtml(id) +
+      noteEditor(id) + musSheet(id) + techHtml(id) +
       '<div class="row"><button class="btn" data-act="photoChange" data-ex="' + esc(id) + '">' + (src ? "غيّر الصورة" : "صوّر جهاز ناديك") + "</button>" +
       (src ? '<button class="btn danger ' + (S.armed === "photo:" + id ? "armed" : "") + '" data-act="photoDel" data-ex="' + esc(id) + '">' + (S.armed === "photo:" + id ? "اضغط مرة ثانية للحذف" : (STOCK.has(id) ? "ارجع للصورة التوضيحية" : "احذف الصورة")) + "</button>" : "") +
       '<button class="btn ghost" data-act="closeOv">إغلاق</button></div></div></div>';
@@ -1264,7 +1417,7 @@ async function autoSavePlan() {
     toast("انحفظت الخطة");
   } catch (e) { writeErr(e); }
 }
-function flushAll() { pushActive(); if (S.dirty) autoSavePlan(); }
+function flushAll() { flushNote(); pushActive(); if (S.dirty) autoSavePlan(); }
 addEventListener("pagehide", flushAll);
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushAll(); });
 
@@ -1281,6 +1434,8 @@ app.addEventListener("input", e => {
   const D = S.draft;
   if (pf === "rest") D.rest = Math.max(15, parseInt(t.value, 10) || 90);
   else if (pf === "bw") D.bw = Math.max(0, parseFloat(t.value) || 0);
+  else if (pf === "height" || pf === "age") D[pf] = Math.max(0, parseInt(t.value, 10) || 0);
+  else if (pf === "sex") D.sex = t.value === "f" ? "f" : "m";
   else if (pf === "dayName") D.days[+t.dataset.d].name = t.value;
   else {
     const ex = D.days[+t.dataset.d].groups[+t.dataset.g].ex[+t.dataset.e];
@@ -1289,6 +1444,7 @@ app.addEventListener("input", e => {
   }
   markDirty();
 });
+document.getElementById("overlay").addEventListener("input", e => { const t = e.target; if (t.dataset && t.dataset.note) queueNote(t.dataset.note, t.value); });
 app.addEventListener("submit", e => {
   if (e.target.id !== "composer") return;
   e.preventDefault();
@@ -1317,9 +1473,14 @@ document.addEventListener("click", async e => {
     case "cancel": if (prevArmed === "cancel") { S.active = null; S.rest = null; saveActive(); try { wake && wake.release(); } catch (x) {} toast("انلغى التمرين"); } else S.armed = "cancel"; render(); break;
     case "rest15": if (S.rest) { S.rest.end = Math.max(S.rest.end, Date.now()) + 15000; S.rest.fired = false; renderRest(); } break;
     case "restSkip": S.rest = null; renderRest(); break;
-    case "closeOv": S.summary = null; S.photoView = null; renderOverlay(); break;
+    case "closeOv": flushNote(); S.summary = null; S.photoView = null; render(); break;
     case "photo": S.photoView = b.dataset.ex; renderOverlay(); break;
     case "genTech": genTech(b.dataset.ex); break;
+    case "volMove": S.volWeek = Math.min(0, S.volWeek + +b.dataset.dir); render(); break;
+    case "bodyForm": S.bodyForm = !S.bodyForm; render(); break;
+    case "bodySave": await saveBodyForm(); break;
+    case "bodyMetric": S.bodyMetric = b.dataset.v; render(); break;
+    case "bodyDel": if (prevArmed === "body:" + b.dataset.id) { try { await dropBody(b.dataset.id); toast("انحذف"); } catch (x) { writeErr(x); } } else S.armed = "body:" + b.dataset.id; render(); break;
     case "calMove": { const [y, m] = S.calMonth; const d = new Date(y, m + +b.dataset.dir, 1); S.calMonth = [d.getFullYear(), d.getMonth()]; S.calDay = null; render(); break; }
     case "calDay": S.calDay = S.calDay === +b.dataset.d ? null : +b.dataset.d; render(); break;
     case "addGp": { const gi = document.getElementById("gpIn"); if (gi) gi.click(); break; }
