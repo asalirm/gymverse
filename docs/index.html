@@ -208,6 +208,25 @@ input,select,textarea{font:inherit;color:var(--ink)}
 .addphoto{height:120px;border:1.5px dashed var(--line);border-radius:12px;background:var(--surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted);font-weight:600}
 .addphoto svg{width:26px;height:26px}
 
+/* calendar, gym photos, clock */
+.cal{display:flex;flex-direction:column;gap:10px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal-wd{font-size:11.5px;color:var(--muted);font-weight:600}
+.cal-d{aspect-ratio:1;border-radius:10px;display:grid;place-items:center;font-size:13.5px;border:0;background:transparent;color:var(--ink);padding:0;min-width:0}
+.cal-d.on{background:var(--c);color:#fff;font-weight:700}
+.cal-d.today{outline:2px solid var(--ink);outline-offset:-2px}
+.cal-d.sel{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--c)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:5px;vertical-align:-1px}
+.cal-detail{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:10px;font-size:14px}
+.gphotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.gphotos figure{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.gphotos img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;background:var(--surface-2)}
+.gphotos input{height:36px;border:1px solid var(--line);border-radius:8px;padding:0 8px;background:var(--bg);font-size:13px;min-width:0;width:100%}
+.btn svg{width:18px;height:18px;vertical-align:-4px}
+.clockbox{display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.clockbox .clock{font-size:28px;font-weight:700;color:var(--ink)}
+
 /* rest timer */
 .rest{position:fixed;z-index:7;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(72px + env(safe-area-inset-bottom,0px));
   max-width:596px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 28px rgba(0,0,0,.25)}
@@ -278,6 +297,7 @@ section > h3{font-size:15px;margin-bottom:10px}
 <div id="overlay"></div>
 <div id="toast" class="toast" hidden></div>
 <input type="file" id="photoIn" accept="image/*" hidden>
+<input type="file" id="gpIn" accept="image/*" multiple hidden>
 
 <script>
 (function(){
@@ -331,7 +351,7 @@ const S = {
   db: null, plan: null, sessions: [], ready: false, note: "",
   view: "today", pickDay: null, active: lsGet("gv.active"),
   draft: null, dirty: false, armed: null,
-  fresh: null, chat: [], coachBusy: false, coachLive: "", coachDraft: "", coachCtl: null, pending: null, sample: null, sampleState: "loading", techCache: {}, techBusy: null, progEx: null, progMetric: "e1rm", openSess: null, rest: null, summary: null, photoView: null, exportText: ""
+  fresh: null, assets: null, photoMap: {}, photosLoaded: false, migrated: false, gymPhotos: [], gpBusy: null, calMonth: null, calDay: null, chat: [], coachBusy: false, coachLive: "", coachDraft: "", coachCtl: null, pending: null, sample: null, sampleState: "loading", techCache: {}, techBusy: null, progEx: null, progMetric: "e1rm", openSess: null, rest: null, summary: null, photoView: null, exportText: ""
 };
 try { const v = lsGet("gv.view"); if (v === "today" || v === "prog" || v === "plan" || v === "coach") S.view = v; } catch (e) {}
 
@@ -344,6 +364,7 @@ async function boot() {
   }
   if (db) {
     S.db = db; S.mode = "db"; subscribe();
+    window.claude.use("assets").then(a => { S.assets = a; maybeMigrate(); if (S.view === "plan") softRender(); }).catch(() => {});
     db.doc("chat/main").get().then(sn => { if (sn.exists && Array.isArray(sn.data().msgs) && !S.chat.length) { S.chat = sn.data().msgs.slice(-40); if (S.view === "coach") render(); } }).catch(() => {});
   } else {
     S.mode = "local"; S.plan = lsGet("gv.plan"); S.sessions = lsGet("gv.sessions") || []; S.chat = lsGet("gv.chat") || []; S.ready = true; render();
@@ -365,6 +386,8 @@ function subscribe() {
   };
   const onErr = () => { clearTimeout(timer); S.note = "انقطع الاتصال بالبيانات. افتح الصفحة من جديد بعد شوي."; S.ready = true; render(); };
   S.db.doc("gym/plan").onSnapshot(snap => { S.plan = snap.exists ? snap.data() : null; gotPlan = true; settle(); }, onErr);
+  S.db.collection("photos").onSnapshot(qs => { const m = {}; qs.docs.forEach(d => { const v = d.data(); if (v && v.asset) m[d.id] = v.asset; }); S.photoMap = m; S.photosLoaded = true; maybeMigrate(); if (S.ready) softRender(); }, () => {});
+  S.db.collection("gymphotos").onSnapshot(qs => { S.gymPhotos = qs.docs.map(d => Object.assign({ id: d.id }, d.data())).sort((a, b) => (a.at < b.at ? -1 : 1)); if (S.ready && S.view === "plan") softRender(); }, () => {});
   S.db.collection("sessions").onSnapshot(qs => { S.sessions = qs.docs.map(d => d.data()).filter(Boolean); gotSess = true; settle(); }, onErr);
 }
 function writeErr(e) {
@@ -451,7 +474,7 @@ function nextDay() {
 function lastOfDay(dayId) { const l = sorted().filter(s => s.dayId === dayId); return l.length ? l[l.length - 1] : null; }
 
 /* ---------- machine photos (kept in this browser) ---------- */
-const photoGet = id => { try { return localStorage.getItem("gv.img." + id) || ""; } catch (e) { return ""; } };
+const photoGet = id => { if (S.photoMap && S.photoMap[id]) return "/_blob/" + S.photoMap[id]; try { return localStorage.getItem("gv.img." + id) || ""; } catch (e) { return ""; } };
 function photoSet(id, data) {
   try { if (data) localStorage.setItem("gv.img." + id, data); else localStorage.removeItem("gv.img." + id); return true; }
   catch (e) { toast("ما فيه مساحة كافية للصورة. احذف صور ما تحتاجها."); return false; }
@@ -538,7 +561,7 @@ function coachContext() {
     const tops = h.map(x => Math.max(...x.sets.map(s => s.w)));
     return { id: e.id, name: e.name, sessions: h.length, first: h[0].date.slice(0, 10) + " " + setsText(h[0].sets), last: h[h.length - 1].date.slice(0, 10) + " " + setsText(h[h.length - 1].sets), best_top_kg: Math.max(...tops), app_suggestion: suggest(e).text };
   }).filter(Boolean);
-  return { today: new Date().toISOString().slice(0, 10), total_sessions: list.length, plan, recent_sessions: recent, exercise_trends: trends };
+  return { today: new Date().toISOString().slice(0, 10), body_weight_kg: bodyW() || null, total_sessions: list.length, plan, recent_sessions: recent, exercise_trends: trends };
 }
 const COACH_RULES = "You are the personal strength coach inside the user's workout app \"دفتر الحديد\". The user trains a push/pull/legs plan built from supersets on gym machines. " +
   "Reply in Saudi Arabic dialect, warm and direct, short paragraphs or short bullet lists, no tables. Use kg. Base every claim on the DATA below; if data is missing, say so plainly. " +
@@ -582,7 +605,7 @@ function normalizePlan(i) {
       })
     }))
   }));
-  return { rest: (S.plan && S.plan.rest) || 90, days };
+  return { rest: (S.plan && S.plan.rest) || 90, bw: (S.plan && S.plan.bw) || 0, days };
 }
 function pendingHtml() {
   const P = S.pending; if (!P) return "";
@@ -672,6 +695,118 @@ function techHtml(id) {
   return '<div class="note small">ما فيه شرح جاهز لهالتمرين. اسأل المدرب في نسخة Claude.</div>';
 }
 
+/* ---------- account photos, gym photo library, calendar, time and calories ---------- */
+const MET = 5; // resistance training in supersets, moderate-to-vigorous effort
+const timeFmt = iso => { try { return new Date(iso).toLocaleTimeString("ar-SA-u-nu-latn-ca-gregory", { hour: "numeric", minute: "2-digit" }); } catch (e) { return ""; } };
+const sessEnd = s => s.endedAt || new Date(new Date(s.date).getTime() + (s.durationSec || 0) * 1000).toISOString();
+const bodyW = () => (S.plan && S.plan.bw > 0 ? S.plan.bw : 0);
+const kcalFor = sec => (bodyW() ? Math.round(MET * bodyW() * sec / 3600) : null);
+const sessKcal = s => (s.kcal != null ? s.kcal : kcalFor(s.durationSec || 0));
+const canCloud = () => !!(S.assets && S.mode === "db");
+function softRender() { const a = document.activeElement; if (a && app.contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return; render(); }
+function blobFrom(file, M) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), im = new Image();
+    im.onload = () => {
+      const k = Math.min(1, M / Math.max(im.naturalWidth, im.naturalHeight));
+      const c = document.createElement("canvas"); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+      c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      c.toBlob(b => (b ? res(b) : rej(new Error("encode"))), "image/jpeg", 0.82);
+    };
+    im.onerror = () => { URL.revokeObjectURL(url); rej(new Error("bad image")); };
+    im.src = url;
+  });
+}
+function dataToBlob(u) {
+  const i = u.indexOf(","), head = u.slice(0, i), bin = atob(u.slice(i + 1)), a = new Uint8Array(bin.length);
+  for (let j = 0; j < bin.length; j++) a[j] = bin.charCodeAt(j);
+  return new Blob([a], { type: (head.match(/data:([^;]+)/) || [])[1] || "image/jpeg" });
+}
+async function savePhoto(exId, file) {
+  if (canCloud()) {
+    const blob = await blobFrom(file, 1100);
+    const r = await S.assets.upload(blob, { type: "image/jpeg" });
+    const old = S.photoMap[exId];
+    await S.db.doc("photos/" + exId).set({ asset: r.id, name: exName(exId), at: new Date().toISOString() });
+    S.photoMap[exId] = r.id; photoSet(exId, "");
+    if (old && old !== r.id) S.assets.delete(old).catch(() => {});
+    return true;
+  }
+  return photoSet(exId, await shrink(file));
+}
+async function removePhoto(exId) {
+  const a = S.photoMap[exId];
+  if (a && S.mode === "db") { await S.db.doc("photos/" + exId).delete(); delete S.photoMap[exId]; if (S.assets) S.assets.delete(a).catch(() => {}); }
+  photoSet(exId, "");
+}
+async function maybeMigrate() {
+  if (S.migrated || !canCloud() || !S.photosLoaded) return;
+  S.migrated = true;
+  const all = photoAll(), ids = Object.keys(all);
+  for (const id of ids) {
+    if (S.photoMap[id]) { photoSet(id, ""); continue; }
+    try {
+      const r = await S.assets.upload(dataToBlob(all[id]), { type: "image/jpeg" });
+      await S.db.doc("photos/" + id).set({ asset: r.id, name: exName(id) || id, at: new Date().toISOString() });
+      S.photoMap[id] = r.id; photoSet(id, "");
+    } catch (e) { return; }
+  }
+  if (ids.length) softRender();
+}
+async function addGymPhotos(files) {
+  if (!canCloud()) return;
+  let n = 0;
+  for (const f of files) {
+    n++; S.gpBusy = n + " من " + files.length; render();
+    try {
+      const r = await S.assets.upload(await blobFrom(f, 1400), { type: "image/jpeg" });
+      await S.db.collection("gymphotos").doc("p" + uid()).set({ asset: r.id, note: "", at: new Date().toISOString() });
+    } catch (e) { toast(e && e.code === "quota_exceeded" ? "المساحة امتلت." : "ما قدرت أرفع صورة. كمّل بالباقي."); }
+  }
+  S.gpBusy = null; toast("انرفعت الصور"); render();
+}
+function gymPhotosHtml() {
+  let h = '<section class="card" style="display:flex;flex-direction:column;gap:10px"><h3 style="margin:0">صور أجهزة ناديك</h3>' +
+    '<p class="small muted" style="margin:0">ارفع صور الأجهزة اللي في ناديك، واكتب اسم كل جهاز إذا تعرفه. تنحفظ في حسابك بشكل خاص، وClaude يقدر يشوفها ويرتب خطتك عليها.</p>';
+  if (!canCloud()) return h + '<div class="note small">هالميزة تشتغل في نسخة Claude.</div></section>';
+  if (S.gymPhotos.length) h += '<div class="gphotos">' + S.gymPhotos.map(p => '<figure><img src="/_blob/' + esc(p.asset) + '" alt="" loading="lazy">' +
+    '<input id="gp-' + esc(p.id) + '" data-gp="' + esc(p.id) + '" placeholder="اسم الجهاز" aria-label="اسم الجهاز" value="' + esc(p.note || "") + '">' +
+    '<button class="btn sm ghost ' + (S.armed === "gp:" + p.id ? "danger armed" : "") + '" data-act="delGp" data-id="' + esc(p.id) + '">' + (S.armed === "gp:" + p.id ? "متأكد؟ احذف" : "حذف") + "</button></figure>").join("") + "</div>";
+  h += '<div class="row"><button class="btn primary" data-act="addGp"' + (S.gpBusy ? " disabled" : "") + ">" + ICON.cam + " أضف صور</button>" +
+    (S.gpBusy ? '<span class="small muted">نرفع ' + esc(S.gpBusy) + "…</span>" : '<span class="small muted"><span class="num">' + S.gymPhotos.length + "</span> صورة</span>") + "</div></section>";
+  return h;
+}
+const DAY_COLORS = ["var(--accent)", "var(--plate)", "var(--good)", "var(--warn)", "var(--bad)"];
+function dayColor(dayId) { const i = S.plan ? S.plan.days.findIndex(d => d.id === dayId) : -1; return i >= 0 ? DAY_COLORS[i % DAY_COLORS.length] : "var(--muted)"; }
+function sessMeta(s) {
+  const k = sessKcal(s);
+  return "<span>" + esc(timeFmt(s.date)) + " – " + esc(timeFmt(sessEnd(s))) + '</span> · <span class="num">' + Math.round((s.durationSec || 0) / 60) + "</span> د" + (k != null ? ' · <span class="num">' + k + "</span> سعرة" : "");
+}
+function calendarHtml(list) {
+  if (!S.calMonth) { const d = new Date(); S.calMonth = [d.getFullYear(), d.getMonth()]; }
+  const [y, mo] = S.calMonth, by = {};
+  list.forEach(s => { const d = new Date(s.date); if (d.getFullYear() === y && d.getMonth() === mo) (by[d.getDate()] = by[d.getDate()] || []).push(s); });
+  const offset = (new Date(y, mo, 1).getDay() + 1) % 7, nd = new Date(y, mo + 1, 0).getDate(), now = new Date(), isNow = now.getFullYear() === y && now.getMonth() === mo;
+  let monthName = ""; try { monthName = new Date(y, mo, 1).toLocaleDateString("ar-SA-u-nu-latn-ca-gregory", { month: "long", year: "numeric" }); } catch (e) { monthName = y + "/" + (mo + 1); }
+  const ms = [].concat(...Object.values(by)), mins = ms.reduce((a, s) => a + (s.durationSec || 0), 0) / 60;
+  const kc = bodyW() ? ms.reduce((a, s) => a + (sessKcal(s) || 0), 0) : null;
+  let h = '<section class="card cal"><div class="spread"><button class="btn sm ghost" data-act="calMove" data-dir="-1" aria-label="الشهر اللي قبل">→</button><h3 style="margin:0">' + esc(monthName) + '</h3><button class="btn sm ghost" data-act="calMove" data-dir="1" aria-label="الشهر اللي بعد">←</button></div>';
+  h += '<div class="cal-grid">' + ["س", "ح", "ن", "ث", "ر", "خ", "ج"].map(d => '<span class="cal-wd">' + d + "</span>").join("");
+  for (let i = 0; i < offset; i++) h += "<span></span>";
+  for (let d = 1; d <= nd; d++) {
+    const ss = by[d], today = isNow && now.getDate() === d;
+    h += ss ? '<button class="cal-d on' + (S.calDay === d ? " sel" : "") + (today ? " today" : "") + '" style="--c:' + dayColor(ss[0].dayId) + '" data-act="calDay" data-d="' + d + '" aria-label="' + d + " " + esc(ss.map(x => x.dayName).join("، ")) + '"><span class="num">' + d + "</span></button>"
+      : '<span class="cal-d' + (today ? " today" : "") + '"><span class="num">' + d + "</span></span>";
+  }
+  h += "</div>";
+  if (S.plan) h += '<div class="legend">' + S.plan.days.map(d => '<span><i style="background:' + dayColor(d.id) + '"></i>' + esc(d.name) + "</span>").join("") + "</div>";
+  h += '<div class="row small muted"><span><b class="num">' + ms.length + '</b> تمرين هالشهر</span><span><b class="num">' + Math.round(mins) + "</b> دقيقة</span>" + (kc != null ? '<span><b class="num">' + kc + "</b> سعرة تقديرية</span>" : "") + "</div>";
+  const sel = S.calDay && by[S.calDay];
+  if (sel) h += '<div class="cal-detail">' + sel.map(s => '<div><b>' + esc(s.dayName || "تمرين") + '</b> <span class="small muted">' + sessMeta(s) + "</span>" +
+    '<div class="sess-body" style="padding:6px 0 0">' + (s.entries || []).map(en => '<div class="spread"><span class="ex-name">' + esc(en.name) + '</span><span class="num muted">' + esc(setsText(en.sets)) + "</span></div>").join("") + "</div></div>").join("") + "</div>";
+  return h + "</section>";
+}
+
 /* ---------- render ---------- */
 const app = document.getElementById("app");
 function render() {
@@ -733,12 +868,13 @@ function viewToday() {
 }
 
 function exLookup(id) { for (const d of S.plan ? S.plan.days : []) for (const g of d.groups) for (const e of g.ex) if (e.id === id) return e; return null; }
+function kcalLiveText() { const k = S.active ? kcalFor((Date.now() - S.active.start) / 1000) : null; return k != null ? "≈ " + k + " سعرة" : "أضف وزنك في الخطة للسعرات"; }
 function viewWorkout() {
   const A = S.active;
   const day = A.day;
   let total = 0, done = 0;
   for (const k in A.log) for (const s of A.log[k]) { total++; if (s.done) done++; }
-  let h = '<section class="card" style="display:flex;flex-direction:column;gap:10px"><div class="wbar"><div><span class="eyebrow">تمرين جاري</span><h2>' + esc(day.name) + '</h2></div><span class="clock num" id="elapsed">' + mmss((Date.now() - A.start) / 1000) + "</span></div>" +
+  let h = '<section class="card" style="display:flex;flex-direction:column;gap:10px"><div class="wbar"><div><span class="eyebrow">تمرين جاري · بدأت ' + esc(timeFmt(new Date(A.start).toISOString())) + '</span><h2>' + esc(day.name) + '</h2></div><div class="clockbox"><span class="clock num" id="elapsed">' + mmss((Date.now() - A.start) / 1000) + '</span><span class="small muted" id="kcalLive">' + kcalLiveText() + "</span></div></div>" +
     '<div class="progress-line" aria-label="التقدم"><i style="width:' + (total ? Math.round(done / total * 100) : 0) + '%"></i></div>' +
     '<div class="spread small muted"><span><span class="num">' + done + "/" + total + "</span> جولة خلصت</span><span>اضغط ✓ بدون كتابة وياخذ الرقم المقترح</span></div></section>";
   day.groups.forEach((g, gi) => {
@@ -817,6 +953,7 @@ function viewProg() {
   let h = '<div class="tiles"><div class="tile"><b>' + recent.length + "</b><span>تمارين آخر ٧ أيام</span></div>" +
     '<div class="tile"><b>' + list.length + "</b><span>كل الجلسات</span></div>" +
     '<div class="tile"><b>' + (vol7 >= 10000 ? fmt(vol7 / 1000) + "k" : Math.round(vol7)) + "</b><span>الحجم آخر ٧ أيام (كغ)</span></div></div>";
+  h += calendarHtml(list);
   if (!list.length) return h + '<div class="card empty"><h2>تطورك بيظهر هنا</h2><p>سجّل أول تمرين من تبويب اليوم، وبعدها تشوف رسم لكل تمرين، وأرقامك القياسية، وسجل جلساتك.</p><button class="btn primary" data-act="nav" data-v="today">روح للتمرين</button></div>';
   const known = new Map();
   allEx(S.plan).forEach(e => known.set(e.id, e.name));
@@ -843,9 +980,9 @@ function viewProg() {
   list.slice().reverse().forEach(s => {
     const open = S.openSess === s.id;
     const sets = (s.entries || []).reduce((a, e) => a + e.sets.length, 0);
-    h += '<div class="sess"><button data-act="openSess" data-id="' + esc(s.id) + '" aria-expanded="' + open + '"><span><b>' + esc(s.dayName || "تمرين") + '</b> <span class="muted small">' + esc(dateFmt(s.date)) + '</span></span><span class="muted small"><span class="num">' + sets + "</span> جولة · <span class=\"num\">" + Math.round((s.durationSec || 0) / 60) + "</span> د</span></button>";
+    h += '<div class="sess"><button data-act="openSess" data-id="' + esc(s.id) + '" aria-expanded="' + open + '"><span><b>' + esc(s.dayName || "تمرين") + '</b> <span class="muted small">' + esc(dateFmt(s.date)) + '</span></span><span class="muted small"><span class="num">' + sets + "</span> جولة</span></button>";
     if (open) {
-      h += '<div class="sess-body">' + (s.entries || []).map(en => '<div class="spread"><span class="ex-name">' + esc(en.name) + '</span><span class="num muted">' + esc(setsText(en.sets)) + "</span></div>").join("") +
+      h += '<div class="sess-body"><div class="small muted">' + sessMeta(s) + "</div>" + (s.entries || []).map(en => '<div class="spread"><span class="ex-name">' + esc(en.name) + '</span><span class="num muted">' + esc(setsText(en.sets)) + "</span></div>").join("") +
         '<div><button class="btn danger sm ' + (S.armed === "del:" + s.id ? "armed" : "") + '" data-act="delSess" data-id="' + esc(s.id) + '">' + (S.armed === "del:" + s.id ? "اضغط مرة ثانية للحذف" : "احذف الجلسة") + "</button></div></div>";
     }
     h += "</div>";
@@ -858,7 +995,7 @@ function viewPlan() {
   if (!S.draft) S.draft = clone(S.plan);
   const D = S.draft;
   let h = '<section class="card" style="display:flex;flex-direction:column;gap:10px"><div class="spread"><h3 style="margin:0">إعدادات</h3></div>' +
-    '<div class="nums" style="grid-template-columns:1fr 1fr"><label for="restSec">الراحة بعد كل سوبر ست (ثانية)<input id="restSec" type="number" inputmode="numeric" min="15" max="600" data-pf="rest" value="' + (D.rest || 90) + '"></label></div>' +
+    '<div class="nums" style="grid-template-columns:1fr 1fr"><label for="restSec">الراحة بعد كل سوبر ست (ثانية)<input id="restSec" type="number" inputmode="numeric" min="15" max="600" data-pf="rest" value="' + (D.rest || 90) + '"></label><label for="bwIn">وزنك (كغ) لحساب السعرات<input id="bwIn" type="number" inputmode="decimal" min="30" max="300" step="0.5" data-pf="bw" value="' + (D.bw || "") + '" placeholder="مثلاً 80"></label></div>' +
     '<p class="small muted" style="margin:0">زيادة الوزن لكل تمرين: لما تكمل أعلى عدد عدات في كل الجولات، يقترح عليك الدفتر الوزن الجديد بهالمقدار.</p></section>';
   D.days.forEach((d, di) => {
     h += '<section class="day-ed"><div class="spread"><input id="dn-' + di + '" aria-label="اسم اليوم" data-pf="dayName" data-d="' + di + '" value="' + esc(d.name) + '">' +
@@ -889,6 +1026,7 @@ function viewPlan() {
     h += '<div class="row"><button class="btn sm" data-act="addSS" data-d="' + di + '">+ سوبر ست</button><button class="btn sm" data-act="addEx" data-d="' + di + '">+ تمرين منفرد</button></div></section>';
   });
   h += '<button class="btn" data-act="addDay">+ أضف يوم</button>';
+  h += gymPhotosHtml();
   h += '<section class="card" style="display:flex;flex-direction:column;gap:10px"><h3 style="margin:0">نسخة احتياطية</h3>' +
     '<p class="small muted" style="margin:0">' + (S.mode === "db" ? "خطتك وسجلك محفوظين في حسابك وتشوفهم من أي جهاز. النسخة الاحتياطية للاحتياط فقط." : "بياناتك محفوظة في هالمتصفح بس. انسخ نسخة احتياطية بين فترة وفترة واحفظها في الملاحظات.") + "</p>" +
     '<div class="row"><button class="btn sm" data-act="exportCopy">انسخ النسخة الاحتياطية</button></div>' +
@@ -918,7 +1056,8 @@ function renderOverlay() {
   const sm = S.summary;
   o.innerHTML = '<div class="scrim" data-act="closeOv"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sumh">' +
     '<span class="eyebrow">انحفظ التمرين</span><h2 id="sumh">عاش! خلصت ' + esc(sm.dayName) + "</h2>" +
-    '<div class="tiles"><div class="tile"><b>' + sm.sets + '</b><span>جولة</span></div><div class="tile"><b>' + Math.round(sm.vol) + '</b><span>الحجم (كغ)</span></div><div class="tile"><b>' + Math.round(sm.min) + "</b><span>دقيقة</span></div></div>" +
+    '<div class="tiles"><div class="tile"><b>' + Math.round(sm.min) + '</b><span>دقيقة</span></div><div class="tile"><b>' + (sm.kcal != null ? sm.kcal : "—") + '</b><span>سعرة تقديرية</span></div><div class="tile"><b>' + sm.sets + "</b><span>جولة</span></div></div>" +
+    '<p class="small muted" style="margin:0">من ' + esc(timeFmt(sm.start)) + " إلى " + esc(timeFmt(sm.end)) + ' · الحجم <span class="num">' + Math.round(sm.vol) + "</span> كغ" + (sm.kcal == null ? " · أضف وزنك في الخطة عشان نحسب السعرات" : "") + "</p>" +
     (sm.prs.length ? '<div style="display:flex;flex-direction:column;gap:6px"><b>أرقام قياسية جديدة</b>' + sm.prs.map(p => '<div class="spread"><span class="ex-name">' + esc(p.name) + '</span><span class="pill pr">' + esc(p.text) + "</span></div>").join("") + "</div>" : "") +
     ((sm.improved || []).length ? '<div style="display:flex;flex-direction:column;gap:6px"><b>تحسنت عن آخر مرة في</b>' + sm.improved.map(n => '<div class="spread"><span class="ex-name">' + esc(n) + '</span><span class="delta up">↑ تحسن</span></div>').join("") + "</div>" : "") +
     (!sm.prs.length && !(sm.improved || []).length ? '<p class="muted" style="margin:0">نفس أرقام آخر مرة. الثبات نفسه تقدّم، والجلسة الجاية زد عدة.</p>' : "") +
@@ -944,7 +1083,7 @@ function beep() {
 }
 setInterval(() => {
   const el = document.getElementById("elapsed");
-  if (el && S.active) el.textContent = mmss((Date.now() - S.active.start) / 1000);
+  if (el && S.active) { el.textContent = mmss((Date.now() - S.active.start) / 1000); const kl = document.getElementById("kcalLive"); if (kl) kl.textContent = kcalLiveText(); }
   if (S.rest) {
     const left = (S.rest.end - Date.now()) / 1000;
     if (left <= 0 && !S.rest.fired) { S.rest.fired = true; beep(); renderRest(); }
@@ -1022,10 +1161,11 @@ async function finish() {
     if (nowTop > prevTop) prs.push({ name: en.name, text: "أثقل وزن " + fmt(nowTop) + " كغ" });
     else if (nowBest > prevBest + 0.05) prs.push({ name: en.name, text: "قوة تقديرية " + fmt(nowBest) + " كغ" });
   });
-  const s = { id: A.id, date: new Date(A.start).toISOString(), dayId: A.day.id, dayName: A.day.name, durationSec: Math.round((Date.now() - A.start) / 1000), entries };
+  const s = { id: A.id, date: new Date(A.start).toISOString(), dayId: A.day.id, dayName: A.day.name, durationSec: Math.round((Date.now() - A.start) / 1000), endedAt: new Date().toISOString(), entries };
+  s.kcal = kcalFor(s.durationSec);
   try { await putSession(s); } catch (e) { writeErr(e); return; }
   const improved = entries.filter(en => exImproved(A, en.exId) && !prs.some(p => p.name === en.name)).map(en => en.name);
-  S.summary = { improved, dayName: s.dayName, sets: entries.reduce((a, e) => a + e.sets.length, 0), vol: entries.reduce((a, e) => a + e.sets.reduce((b, x) => b + x.w * x.r, 0), 0), min: s.durationSec / 60, prs };
+  S.summary = { improved, dayName: s.dayName, sets: entries.reduce((a, e) => a + e.sets.length, 0), vol: entries.reduce((a, e) => a + e.sets.reduce((b, x) => b + x.w * x.r, 0), 0), min: s.durationSec / 60, prs, kcal: s.kcal, start: s.date, end: s.endedAt };
   S.active = null; S.rest = null; saveActive();
   try { wake && wake.release(); } catch (e) {} wake = null;
   render();
@@ -1057,6 +1197,7 @@ app.addEventListener("input", e => {
   const pf = t.dataset.pf; if (!pf || !S.draft) return;
   const D = S.draft;
   if (pf === "rest") D.rest = Math.max(15, parseInt(t.value, 10) || 90);
+  else if (pf === "bw") D.bw = Math.max(0, parseFloat(t.value) || 0);
   else if (pf === "dayName") D.days[+t.dataset.d].name = t.value;
   else {
     const ex = D.days[+t.dataset.d].groups[+t.dataset.g].ex[+t.dataset.e];
@@ -1072,6 +1213,8 @@ app.addEventListener("submit", e => {
   sendCoach(ta ? ta.value : S.coachDraft);
 });
 app.addEventListener("change", e => {
+  const gp = e.target.dataset && e.target.dataset.gp;
+  if (gp && S.db) { S.db.doc("gymphotos/" + gp).update({ note: e.target.value.trim() }).catch(writeErr); return; }
   if (e.target.dataset.in === "progEx") { S.progEx = e.target.value; render(); }
 });
 document.addEventListener("click", async e => {
@@ -1094,6 +1237,15 @@ document.addEventListener("click", async e => {
     case "closeOv": S.summary = null; S.photoView = null; renderOverlay(); break;
     case "photo": S.photoView = b.dataset.ex; renderOverlay(); break;
     case "genTech": genTech(b.dataset.ex); break;
+    case "calMove": { const [y, m] = S.calMonth; const d = new Date(y, m + +b.dataset.dir, 1); S.calMonth = [d.getFullYear(), d.getMonth()]; S.calDay = null; render(); break; }
+    case "calDay": S.calDay = S.calDay === +b.dataset.d ? null : +b.dataset.d; render(); break;
+    case "addGp": { const gi = document.getElementById("gpIn"); if (gi) gi.click(); break; }
+    case "delGp": {
+      const id = b.dataset.id;
+      if (prevArmed === "gp:" + id) { const p = S.gymPhotos.find(x => x.id === id); try { await S.db.doc("gymphotos/" + id).delete(); if (p && S.assets) S.assets.delete(p.asset).catch(() => {}); toast("انحذفت"); } catch (x) { writeErr(x); } }
+      else S.armed = "gp:" + id;
+      render(); break;
+    }
     case "starter": sendCoach(b.dataset.t); break;
     case "stopCoach": if (S.coachCtl) S.coachCtl.abort(); break;
     case "clearChat": if (prevArmed === "clearChat") { S.chat = []; S.pending = null; await saveChat(); } else S.armed = "clearChat"; render(); break;
@@ -1109,7 +1261,7 @@ document.addEventListener("click", async e => {
       break;
     }
     case "photoChange": pickPhoto(b.dataset.ex); break;
-    case "photoDel": if (prevArmed === "photo:" + b.dataset.ex) { photoSet(b.dataset.ex, ""); S.photoView = null; toast("انحذفت الصورة"); render(); } else { S.armed = "photo:" + b.dataset.ex; renderOverlay(); } break;
+    case "photoDel": if (prevArmed === "photo:" + b.dataset.ex) { try { await removePhoto(b.dataset.ex); toast("انحذفت الصورة"); } catch (x) { writeErr(x); } S.photoView = null; render(); } else { S.armed = "photo:" + b.dataset.ex; renderOverlay(); } break;
     case "metric": S.progMetric = b.dataset.v; render(); break;
     case "openSess": S.openSess = S.openSess === b.dataset.id ? null : b.dataset.id; render(); break;
     case "delSess": if (prevArmed === "del:" + b.dataset.id) { try { await dropSession(b.dataset.id); toast("انحذفت الجلسة"); } catch (x) { writeErr(x); } } else S.armed = "del:" + b.dataset.id; render(); break;
@@ -1160,8 +1312,13 @@ document.addEventListener("click", async e => {
 document.getElementById("photoIn").addEventListener("change", async e => {
   const inp = e.target, f = inp.files && inp.files[0]; inp.value = "";
   if (!f || !photoTarget) return;
-  try { const data = await shrink(f); if (photoSet(photoTarget, data)) { S.photoView = null; toast("انحفظت صورة الجهاز"); render(); } }
-  catch (x) { toast("ما قدرت أقرا الصورة. جرّب صورة ثانية."); }
+  if (canCloud()) toast("نرفع الصورة…");
+  try { if (await savePhoto(photoTarget, f)) { S.photoView = null; toast("انحفظت صورة الجهاز"); render(); } }
+  catch (x) { toast(x && x.code === "quota_exceeded" ? "المساحة امتلت." : "ما قدرت أحفظ الصورة. جرّب صورة ثانية."); }
+});
+document.getElementById("gpIn").addEventListener("change", e => {
+  const files = Array.from(e.target.files || []); e.target.value = "";
+  if (files.length) addGymPhotos(files);
 });
 boot();
 })();
