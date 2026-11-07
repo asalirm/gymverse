@@ -128,19 +128,23 @@ input,select,textarea{font:inherit;color:var(--ink)}
 
 /* set rows */
 .sets{display:flex;flex-direction:column;gap:6px}
-.set{display:grid;grid-template-columns:28px 1fr 1fr 48px;gap:8px;align-items:center}
+.set{display:grid;grid-template-columns:22px 64px 1fr 1fr 46px;gap:6px;align-items:center}
+.prev{height:46px;border-radius:var(--r-sm);background:var(--surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;font-variant-numeric:tabular-nums}
+.prev b{font-size:15px;font-weight:700;color:var(--ink)}
+.prev small{font-size:11px;color:var(--muted)}
+.prev.none{color:var(--muted);font-size:11.5px}
 .set .i{font-size:13px;color:var(--muted);text-align:center;font-weight:600}
 .field{position:relative}
-.field input{width:100%;height:46px;border:1.5px solid var(--line);background:var(--bg);border-radius:var(--r-sm);padding:0 10px 0 38px;font-family:var(--f-num);font-size:18px;font-weight:600;text-align:left;direction:ltr;font-variant-numeric:tabular-nums}
+.field input{width:100%;height:46px;border:1.5px solid var(--line);background:var(--bg);border-radius:var(--r-sm);padding:0 8px 0 30px;font-family:var(--f-num);font-size:18px;font-weight:600;text-align:left;direction:ltr;font-variant-numeric:tabular-nums}
 .field input:focus{border-color:var(--accent);outline:none;background:var(--surface)}
 .field input::placeholder{color:var(--muted);opacity:.65}
-.field span{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none}
+.field span{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none}
 .tick{height:46px;border-radius:var(--r-sm);border:1.5px solid var(--line);background:var(--surface);display:grid;place-items:center}
 .tick svg{width:20px;height:20px;opacity:.35}
 .set.done .tick{background:var(--good);border-color:var(--good);color:var(--surface)}
 .set.done .tick svg{opacity:1}
 .set.done input{background:var(--good-soft);border-color:transparent}
-.set-head{display:grid;grid-template-columns:28px 1fr 1fr 48px;gap:8px;font-size:11.5px;color:var(--muted);font-weight:600;text-align:center}
+.set-head{display:grid;grid-template-columns:22px 64px 1fr 1fr 46px;gap:6px;font-size:11.5px;color:var(--muted);font-weight:600;text-align:center}
 
 /* workout bar */
 .wbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -150,7 +154,7 @@ input,select,textarea{font:inherit;color:var(--ink)}
 .progress-line i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .3s}
 
 /* comparison with last session */
-.cmp{grid-column:2 / -1;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted);margin-top:-2px}
+.cmp{grid-column:3 / -1;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:-2px}
 .delta{display:inline-flex;align-items:center;gap:3px;border-radius:999px;padding:1px 9px;font-weight:700;font-size:12px;white-space:nowrap}
 .delta.up{background:var(--good);color:#fff}
 .delta.fresh,.fire.fresh{animation:pop .45s cubic-bezier(.3,1.6,.5,1)}
@@ -475,7 +479,9 @@ function viewToday() {
     h += '<div class="group' + (ss ? " ss" : "") + '"><div class="group-h"><span class="tag">' + (ss ? "سوبر ست " + (gi + 1) : "تمرين " + (gi + 1)) + "</span></div>";
     g.ex.forEach((ex, ei) => {
       const sg = suggest(ex);
-      h += '<div class="ex"><div class="ex-h">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(ex.name) + '</div><div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div></div></div>" +
+      const lh = history(ex.id), ls = lh.length ? lh[lh.length - 1].sets : null;
+      h += '<div class="ex"><div class="ex-h">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(ex.name) + '</div><div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div>" +
+        (ls ? '<div class="last">آخر وزن: <b class="num">' + fmt(Math.max(...ls.map(x => x.w))) + "</b> كغ · <span class=\"num\">" + esc(setsText(ls)) + "</span></div>" : "") + "</div></div>" +
         '<div class="sug"><span class="pill ' + sg.kind + '">' + KIND[sg.kind] + "</span><span>" + esc(sg.text) + "</span></div></div>";
     });
     h += "</div>";
@@ -505,16 +511,16 @@ function viewWorkout() {
       h += '<div class="ex"><div class="ex-h">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(ex.name) + '</div><div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div>" +
         (better ? '<span class="fire' + (S.fresh === ex.id + ":done" ? " fresh" : "") + '">↑ تحسنت عن آخر مرة</span>' : "") + "</div></div>" +
         '<div class="sug"><span class="pill ' + sg.kind + '">' + KIND[sg.kind] + "</span><span>" + esc(sg.text) + "</span></div>" +
-        (last ? '<div class="last">آخر مرة (' + esc(dateFmt(last.date, { day: "numeric", month: "short" })) + '): <span class="num">' + esc(setsText(last.sets)) + "</span></div>" : "") +
-        '<div class="sets"><div class="set-head"><span>#</span><span>الوزن (كغ)</span><span>العدات</span><span>تم</span></div>';
+        (last ? '<div class="last">آخر جلسة: ' + esc(dateFmt(last.date)) + "</div>" : "") +
+        '<div class="sets"><div class="set-head"><span>#</span><span>آخر مرة</span><span>الوزن (كغ)</span><span>العدات</span><span>تم</span></div>';
       rows.forEach((s, i) => {
         h += '<div class="set' + (s.done ? " done" : "") + '"><span class="i">' + (i + 1) + "</span>" +
+          (pv[i] ? '<div class="prev" aria-label="آخر مرة ' + fmt(pv[i].w) + " كغ " + pv[i].r + ' عدات"><b class="num">' + fmt(pv[i].w) + '</b><small>كغ × <span class="num">' + pv[i].r + "</span></small></div>" : '<div class="prev none">' + (hist.length ? "—" : "أول مرة") + "</div>") +
           '<div class="field"><input id="w-' + esc(ex.id) + "-" + i + '" inputmode="decimal" autocomplete="off" aria-label="الوزن للجولة ' + (i + 1) + '" data-in="w" data-ex="' + esc(ex.id) + '" data-i="' + i + '" value="' + esc(s.w) + '" placeholder="' + (sg.w != null ? fmt(sg.w) : "") + '"><span>كغ</span></div>' +
           '<div class="field"><input id="r-' + esc(ex.id) + "-" + i + '" inputmode="numeric" autocomplete="off" aria-label="العدات للجولة ' + (i + 1) + '" data-in="r" data-ex="' + esc(ex.id) + '" data-i="' + i + '" value="' + esc(s.r) + '" placeholder="' + sg.r + '"><span>عدة</span></div>' +
           '<button class="tick" data-act="tick" data-ex="' + esc(ex.id) + '" data-i="' + i + '" aria-pressed="' + !!s.done + '" aria-label="خلصت الجولة ' + (i + 1) + '">' + ICON.tick + "</button>";
         const c = s.done ? cmpSet(rowVal(s), pv[i]) : null;
-        h += '<div class="cmp"><span>' + (pv[i] ? 'آخر مرة: <span class="num">' + fmt(pv[i].w) + "×" + pv[i].r + "</span>" : (hist.length ? "جولة زيادة" : "أول مرة")) + "</span>" +
-          (c ? '<span class="delta ' + c.k + (S.fresh === ex.id + ":" + i ? " fresh" : "") + '">' + c.t + "</span>" : "") + "</div></div>";
+        h += (c ? '<div class="cmp"><span class="delta ' + c.k + (S.fresh === ex.id + ":" + i ? " fresh" : "") + '">' + c.t + "</span></div>" : "") + "</div>";
       });
       h += '</div><div class="row"><button class="btn sm ghost" data-act="addSet" data-ex="' + esc(ex.id) + '">+ جولة</button>' + (rows.length > 1 ? '<button class="btn sm ghost" data-act="rmSet" data-ex="' + esc(ex.id) + '">− جولة</button>' : "") + "</div></div>";
     });

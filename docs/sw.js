@@ -1,5 +1,5 @@
 // Offline support for Iron Log. Generated into docs/sw.js by scripts/build-pwa.mjs.
-const CACHE = "iron-log-927b6012cd";
+const CACHE = "iron-log-66a64dc524";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 // Exercise photos (img/) are cached on first view by the fetch handler below.
 
