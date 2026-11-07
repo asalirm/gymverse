@@ -209,6 +209,9 @@ section > h3{font-size:15px;margin-bottom:10px}
 .thumb .cam{display:flex;flex-direction:column;align-items:center;gap:1px;font-size:10.5px;font-weight:600}
 .thumb .cam svg{width:20px;height:20px}
 .thumb .mark{position:absolute;top:-7px;right:-7px;width:24px;height:24px;font-size:12px;border:2px solid var(--surface)}
+.stock{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stock figure{margin:0;display:flex;flex-direction:column;gap:4px}
+.stock figcaption{font-size:12px;color:var(--muted);text-align:center;font-weight:600}
 .viewer-img{width:100%;max-height:60vh;object-fit:contain;border-radius:12px;background:var(--surface-2);display:block}
 @media (max-width:380px){ .tiles{grid-template-columns:1fr 1fr} .nums{grid-template-columns:1fr 1fr} .hero h2{font-size:28px} }
 @media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
@@ -376,10 +379,12 @@ function photoSet(id, data) {
   catch (e) { toast("ما فيه مساحة كافية للصورة. احذف صور ما تحتاجها."); return false; }
 }
 function photoAll() { const o = {}; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf("gv.img.") === 0) o[k.slice(7)] = localStorage.getItem(k); } } catch (e) {} return o; }
+const STOCK = new Set(["pu-incline","pu-lateral","pu-chest","pu-reardelt","pu-ohp","pu-shrug","pu-tripress","pu-pushdown","pl-pulldown","pl-cablecurl","pl-cablerow","pl-hammer","pl-machrow","pl-curlmach","pl-straightarm","pl-backext","lg-press","lg-calf","lg-hack","lg-curl","lg-rdl","lg-ext","lg-thrust","lg-adduct"]);
+const stockSrc = (id, n) => STOCK.has(id) ? "img/" + id + "-" + n + ".jpg" : "";
 function thumb(ex, mark) {
-  const src = photoGet(ex.id);
+  const src = photoGet(ex.id) || stockSrc(ex.id, 0);
   return '<button class="thumb' + (src ? " has" : "") + '" data-act="photo" data-ex="' + esc(ex.id) + '" aria-label="' + (src ? "كبّر صورة الجهاز" : "أضف صورة الجهاز") + '">' +
-    (src ? '<img src="' + src + '" alt="">' : '<span class="cam">' + ICON.cam + "صورة</span>") + '<span class="mark">' + mark + "</span></button>";
+    (src ? '<img src="' + src + '" alt="" loading="lazy">' : '<span class="cam">' + ICON.cam + "صورة</span>") + '<span class="mark">' + mark + "</span></button>";
 }
 function exName(id) {
   const pools = [S.draft, S.plan, S.active && { days: [S.active.day] }];
@@ -622,12 +627,14 @@ function viewPlan() {
 function renderOverlay() {
   const o = document.getElementById("overlay");
   if (S.photoView) {
-    const id = S.photoView, src = photoGet(id);
+    const id = S.photoView, src = photoGet(id), stock = !src && STOCK.has(id);
     o.innerHTML = '<div class="scrim" data-act="closeOv"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="phh">' +
       '<span class="eyebrow">صورة الجهاز</span><h2 id="phh" class="ex-name" style="font-family:var(--f-body);font-size:18px">' + esc(exName(id)) + "</h2>" +
       (src ? '<img class="viewer-img" src="' + src + '" alt="">' : "") +
-      '<div class="row"><button class="btn primary" data-act="photoChange" data-ex="' + esc(id) + '">غيّر الصورة</button>' +
-      '<button class="btn danger ' + (S.armed === "photo:" + id ? "armed" : "") + '" data-act="photoDel" data-ex="' + esc(id) + '">' + (S.armed === "photo:" + id ? "اضغط مرة ثانية للحذف" : "احذف الصورة") + "</button>" +
+      (stock ? '<div class="stock"><figure><img class="viewer-img" src="' + stockSrc(id, 0) + '" alt=""><figcaption>البداية</figcaption></figure><figure><img class="viewer-img" src="' + stockSrc(id, 1) + '" alt=""><figcaption>النهاية</figcaption></figure></div>' +
+        '<p class="small muted" style="margin:0">صورة توضيحية للحركة. جهاز ناديك ممكن يختلف شكله، وتقدر تصوّره وتحط صورته بدالها.</p>' : "") +
+      '<div class="row"><button class="btn primary" data-act="photoChange" data-ex="' + esc(id) + '">' + (src ? "غيّر الصورة" : "صوّر جهاز ناديك") + "</button>" +
+      (src ? '<button class="btn danger ' + (S.armed === "photo:" + id ? "armed" : "") + '" data-act="photoDel" data-ex="' + esc(id) + '">' + (S.armed === "photo:" + id ? "اضغط مرة ثانية للحذف" : (STOCK.has(id) ? "ارجع للصورة التوضيحية" : "احذف الصورة")) + "</button>" : "") +
       '<button class="btn ghost" data-act="closeOv">إغلاق</button></div></div></div>';
     return;
   }
@@ -783,7 +790,7 @@ document.addEventListener("click", async e => {
     case "rest15": if (S.rest) { S.rest.end = Math.max(S.rest.end, Date.now()) + 15000; S.rest.fired = false; renderRest(); } break;
     case "restSkip": S.rest = null; renderRest(); break;
     case "closeOv": S.summary = null; S.photoView = null; renderOverlay(); break;
-    case "photo": if (photoGet(b.dataset.ex)) { S.photoView = b.dataset.ex; renderOverlay(); } else pickPhoto(b.dataset.ex); break;
+    case "photo": if (photoGet(b.dataset.ex) || STOCK.has(b.dataset.ex)) { S.photoView = b.dataset.ex; renderOverlay(); } else pickPhoto(b.dataset.ex); break;
     case "photoChange": pickPhoto(b.dataset.ex); break;
     case "photoDel": if (prevArmed === "photo:" + b.dataset.ex) { photoSet(b.dataset.ex, ""); S.photoView = null; toast("انحذفت الصورة"); render(); } else { S.armed = "photo:" + b.dataset.ex; renderOverlay(); } break;
     case "metric": S.progMetric = b.dataset.v; render(); break;
