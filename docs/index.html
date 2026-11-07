@@ -227,6 +227,17 @@ input,select,textarea{font:inherit;color:var(--ink)}
 .clockbox{display:flex;flex-direction:column;align-items:flex-end;gap:1px}
 .clockbox .clock{font-size:28px;font-weight:700;color:var(--ink)}
 
+/* muscles */
+.mus{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;margin-top:3px}
+.mus i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-inline-end:5px;vertical-align:1px}
+.mus-p{color:var(--ink);font-weight:600}.mus-p i{background:var(--accent)}
+.mus-s{color:var(--muted)}.mus-s i{border:1.5px solid var(--muted);box-sizing:border-box}
+.mus-sheet{display:flex;flex-direction:column;gap:8px}
+.mus-sheet .chips{margin-top:4px}
+.mchip{border-radius:999px;padding:3px 11px;font-size:13px;font-weight:600}
+.mchip.p{background:var(--accent-soft);color:var(--accent)}
+.mchip.s{background:var(--surface-2);color:var(--muted)}
+
 /* rest timer */
 .rest{position:fixed;z-index:7;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(72px + env(safe-area-inset-bottom,0px));
   max-width:596px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 28px rgba(0,0,0,.25)}
@@ -387,6 +398,7 @@ function subscribe() {
   const onErr = () => { clearTimeout(timer); S.note = "انقطع الاتصال بالبيانات. افتح الصفحة من جديد بعد شوي."; S.ready = true; render(); };
   S.db.doc("gym/plan").onSnapshot(snap => { S.plan = snap.exists ? snap.data() : null; gotPlan = true; settle(); }, onErr);
   S.db.collection("photos").onSnapshot(qs => { const m = {}; qs.docs.forEach(d => { const v = d.data(); if (v && v.asset) m[d.id] = v.asset; }); S.photoMap = m; S.photosLoaded = true; maybeMigrate(); if (S.ready) softRender(); }, () => {});
+  S.db.collection("tech").onSnapshot(qs => { qs.docs.forEach(d => { S.techCache[d.id] = d.data(); }); if (S.ready) softRender(); }, () => {});
   S.db.collection("gymphotos").onSnapshot(qs => { S.gymPhotos = qs.docs.map(d => Object.assign({ id: d.id }, d.data())).sort((a, b) => (a.at < b.at ? -1 : 1)); if (S.ready && S.view === "plan") softRender(); }, () => {});
   S.db.collection("sessions").onSnapshot(qs => { S.sessions = qs.docs.map(d => d.data()).filter(Boolean); gotSess = true; settle(); }, onErr);
 }
@@ -537,6 +549,49 @@ const TECH = {
   "lg-adduct": T(["اضبط مدى الفتح بحيث تحس بتمدد مريح.", "خل ظهرك على المسند.", "ضم رجولك لين تتقابل الوسائد.", "ارجع ببطء."], ["خل الحركة بطيئة ومتحكم فيها.", "خل حوضك ثابت."], ["الفتح أكثر من مرونتك.", "الرجوع بسرعة."])
 };
 
+/* ---------- target muscles (primary / supporting) ---------- */
+const MU = (p, s) => ({ p, s });
+const MUSCLES = {
+  "pu-incline": MU(["الصدر العلوي"], ["مقدمة الكتف", "التراي"]),
+  "pu-lateral": MU(["الكتف الجانبي"], ["الترابيس", "مقدمة الكتف"]),
+  "pu-chest": MU(["الصدر"], ["مقدمة الكتف", "التراي"]),
+  "pu-reardelt": MU(["خلفي الكتف"], ["أعلى الظهر (المعينية)", "الترابيس الوسطى"]),
+  "pu-ohp": MU(["مقدمة الكتف", "الكتف الجانبي"], ["التراي", "الصدر العلوي"]),
+  "pu-shrug": MU(["الترابيس العلوية"], ["الساعد (القبضة)"]),
+  "pu-tripress": MU(["التراي"], ["الصدر السفلي", "مقدمة الكتف"]),
+  "pu-pushdown": MU(["التراي"], ["الساعد"]),
+  "pl-pulldown": MU(["المجنص (اللاتس)"], ["الباي", "خلفي الكتف", "أعلى الظهر"]),
+  "pl-cablecurl": MU(["الباي"], ["البراكياليس", "الساعد"]),
+  "pl-cablerow": MU(["منتصف الظهر", "المجنص (اللاتس)"], ["الباي", "خلفي الكتف"]),
+  "pl-hammer": MU(["البراكياليس", "الساعد (البراكيوراديالس)"], ["الباي"]),
+  "pl-machrow": MU(["منتصف الظهر (المعينية والترابيس الوسطى)"], ["المجنص (اللاتس)", "خلفي الكتف", "الباي"]),
+  "pl-curlmach": MU(["الباي"], ["البراكياليس"]),
+  "pl-straightarm": MU(["المجنص (اللاتس)"], ["التراي (الرأس الطويل)", "خلفي الكتف"]),
+  "pl-backext": MU(["أسفل الظهر"], ["المؤخرة", "الخلفية"]),
+  "lg-press": MU(["الفخذ الأمامي"], ["المؤخرة", "الفخذ الداخلي"]),
+  "lg-calf": MU(["السمانة"], ["العضلة النعلية (السوليوس)"]),
+  "lg-hack": MU(["الفخذ الأمامي"], ["المؤخرة"]),
+  "lg-curl": MU(["الخلفية"], ["السمانة"]),
+  "lg-rdl": MU(["الخلفية", "المؤخرة"], ["أسفل الظهر", "الفخذ الداخلي"]),
+  "lg-ext": MU(["الفخذ الأمامي"], []),
+  "lg-thrust": MU(["المؤخرة"], ["الخلفية", "الفخذ الأمامي"]),
+  "lg-adduct": MU(["الفخذ الداخلي (الضامة)"], [])
+};
+function musclesFor(id) {
+  if (MUSCLES[id]) return MUSCLES[id];
+  const t = S.techCache[id];
+  return t && Array.isArray(t.primary) && t.primary.length ? { p: t.primary, s: Array.isArray(t.secondary) ? t.secondary : [] } : null;
+}
+function musLine(id) {
+  const m = musclesFor(id); if (!m) return "";
+  return '<div class="mus"><span class="mus-p"><i></i>' + m.p.map(esc).join("، ") + "</span>" + (m.s.length ? '<span class="mus-s"><i></i>' + m.s.map(esc).join("، ") + "</span>" : "") + "</div>";
+}
+function musSheet(id) {
+  const m = musclesFor(id); if (!m) return "";
+  return '<div class="mus-sheet"><div><b>العضلة الأساسية</b><div class="chips">' + m.p.map(x => '<span class="mchip p">' + esc(x) + "</span>").join("") + "</div></div>" +
+    (m.s.length ? '<div><b>العضلات المساندة</b><div class="chips">' + m.s.map(x => '<span class="mchip s">' + esc(x) + "</span>").join("") + "</div></div>" : "") + "</div>";
+}
+
 /* ---------- coach (Claude chat, inside the Claude viewer) ---------- */
 const ARTIFACT_URL = "https://claude.ai/artifact/N7kLwnFtT5zdbSVGcdShsh";
 function md(t) {
@@ -554,7 +609,7 @@ function md(t) {
 }
 function coachContext() {
   const list = sorted();
-  const plan = S.plan ? { rest_seconds: S.plan.rest || 90, days: S.plan.days.map(d => ({ id: d.id, name: d.name, groups: d.groups.map(g => g.ex.map(e => ({ id: e.id, name: e.name, sets: e.sets, reps: e.min + "-" + e.max, increment_kg: e.inc }))) })) } : null;
+  const plan = S.plan ? { rest_seconds: S.plan.rest || 90, days: S.plan.days.map(d => ({ id: d.id, name: d.name, groups: d.groups.map(g => g.ex.map(e => ({ id: e.id, name: e.name, muscles: musclesFor(e.id) || undefined, sets: e.sets, reps: e.min + "-" + e.max, increment_kg: e.inc }))) })) } : null;
   const recent = list.slice(-12).map(s => ({ date: s.date.slice(0, 10), day: s.dayName, minutes: Math.round((s.durationSec || 0) / 60), exercises: (s.entries || []).map(en => en.name + ": " + setsText(en.sets)) }));
   const trends = allEx(S.plan).map(e => {
     const h = history(e.id); if (!h.length) return null;
@@ -674,9 +729,9 @@ async function genTech(id) {
   if (!S.sample || S.techBusy) return;
   const name = exName(id); S.techBusy = id; renderOverlay();
   try {
-    const t = await S.sample.json("Write gym technique notes in Saudi Arabic dialect for the exercise \"" + name + "\". Reply with only JSON: {\"steps\": [3-4 short strings, in order], \"tips\": [2 short strings], \"avoid\": [2 short common mistakes]}.", { modelTier: "default" });
+    const t = await S.sample.json("Write gym technique notes in Saudi Arabic dialect for the exercise \"" + name + "\". Reply with only JSON: {\"primary\": [1-2 primary target muscles in Arabic], \"secondary\": [0-3 supporting muscles in Arabic], \"steps\": [3-4 short strings, in order], \"tips\": [2 short strings], \"avoid\": [2 short common mistakes]}.", { modelTier: "default" });
     const clean = k => (Array.isArray(t && t[k]) ? t[k] : []).map(String).slice(0, 5);
-    const data = { steps: clean("steps"), tips: clean("tips"), avoid: clean("avoid"), name };
+    const data = { primary: clean("primary"), secondary: clean("secondary"), steps: clean("steps"), tips: clean("tips"), avoid: clean("avoid"), name };
     if (!data.steps.length) throw new Error("empty");
     S.techCache[id] = data;
     try { await S.db.doc("tech/" + id).set(data); } catch (e) {}
@@ -691,7 +746,7 @@ function techHtml(id) {
       '<p class="small muted" style="margin:0">الإيقاع: نزول بطيء ٢–٣ ثواني، وطلوع بقوة وتحكم.</p></div>';
   }
   if (S.techBusy === id) return '<div class="note">نجهّز الشرح… <span class="dots"></span></div>';
-  if (S.sample) return '<button class="btn" data-act="genTech" data-ex="' + esc(id) + '">اشرح لي طريقة الأداء</button>';
+  if (S.sample) return '<button class="btn" data-act="genTech" data-ex="' + esc(id) + '">اشرح لي طريقة الأداء والعضلات</button>';
   return '<div class="note small">ما فيه شرح جاهز لهالتمرين. اسأل المدرب في نسخة Claude.</div>';
 }
 
@@ -857,7 +912,7 @@ function viewToday() {
     g.ex.forEach((ex, ei) => {
       const sg = suggest(ex);
       const lh = history(ex.id), ls = lh.length ? lh[lh.length - 1].sets : null;
-      h += '<div class="ex"><div class="ex-h">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(ex.name) + '</div><div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div>" + techBtn(ex) +
+      h += '<div class="ex"><div class="ex-h">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(ex.name) + '</div><div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div>" + musLine(ex.id) + techBtn(ex) +
         (ls ? '<div class="last">آخر وزن: <b class="num">' + fmt(Math.max(...ls.map(x => x.w))) + "</b> كغ · <span class=\"num\">" + esc(setsText(ls)) + "</span></div>" : "") + "</div></div>" +
         '<div class="sug"><span class="pill ' + sg.kind + '">' + KIND[sg.kind] + "</span><span>" + esc(sg.text) + "</span></div></div>";
     });
@@ -886,7 +941,7 @@ function viewWorkout() {
       const last = hist.length ? hist[hist.length - 1] : null;
       const rows = A.log[ex.id] || [], pv = (A.prev && A.prev[ex.id]) || [];
       const allDone = rows.length && rows.every(x => x.done), better = allDone && exImproved(A, ex.id);
-      h += '<div class="ex"><div class="ex-h">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(ex.name) + '</div><div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div>" + techBtn(ex) +
+      h += '<div class="ex"><div class="ex-h">' + thumb(ex, ss ? LETTERS[ei] : gi + 1) + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(ex.name) + '</div><div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div>" + musLine(ex.id) + techBtn(ex) +
         (better ? '<span class="fire' + (S.fresh === ex.id + ":done" ? " fresh" : "") + '">↑ تحسنت عن آخر مرة</span>' : "") + "</div></div>" +
         '<div class="sug"><span class="pill ' + sg.kind + '">' + KIND[sg.kind] + "</span><span>" + esc(sg.text) + "</span></div>" +
         (last ? '<div class="last">آخر جلسة: ' + esc(dateFmt(last.date)) + "</div>" : "") +
@@ -1046,7 +1101,7 @@ function renderOverlay() {
       (src ? '<img class="viewer-img" src="' + src + '" alt="صورة جهاز ناديك">' : "") +
       (stock ? '<div class="stock"><figure><img class="viewer-img" src="' + stockSrc(id, 0) + '" alt=""><figcaption>البداية</figcaption></figure><figure><img class="viewer-img" src="' + stockSrc(id, 1) + '" alt=""><figcaption>النهاية</figcaption></figure></div>' : "") +
       (!src && !stock ? '<button class="addphoto" data-act="photoChange" data-ex="' + esc(id) + '">' + ICON.cam + "أضف صورة الجهاز</button>" : "") +
-      techHtml(id) +
+      musSheet(id) + techHtml(id) +
       '<div class="row"><button class="btn" data-act="photoChange" data-ex="' + esc(id) + '">' + (src ? "غيّر الصورة" : "صوّر جهاز ناديك") + "</button>" +
       (src ? '<button class="btn danger ' + (S.armed === "photo:" + id ? "armed" : "") + '" data-act="photoDel" data-ex="' + esc(id) + '">' + (S.armed === "photo:" + id ? "اضغط مرة ثانية للحذف" : (STOCK.has(id) ? "ارجع للصورة التوضيحية" : "احذف الصورة")) + "</button>" : "") +
       '<button class="btn ghost" data-act="closeOv">إغلاق</button></div></div></div>';
