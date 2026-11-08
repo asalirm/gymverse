@@ -404,17 +404,17 @@ const ICON = {
 /* ---------- template plan (loaded only when the viewer asks) ---------- */
 const E = (id, name, sets, min, max, inc) => ({ id, name, sets, min, max, inc });
 const TEMPLATE = { rest: 90, days: [
-  { id: "push", name: "بوش", groups: [
-    { id: "pu1", ex: [E("pu-incline", "Plate Loaded Incline Chest Press Machine", 3, 8, 10, 5), E("pu-lateral", "Single Arm Cable Lateral Raise", 3, 10, 12, 2.5)] },
-    { id: "pu2", ex: [E("pu-chest", "Selector Chest Press Machine", 3, 10, 12, 5), E("pu-reardelt", "Rear Delt Machine", 3, 10, 12, 5)] },
-    { id: "pu3", ex: [E("pu-ohp", "Selector Overhead Press Machine, Wide", 3, 8, 10, 5), E("pu-shrug", "Standing Dumbbell Shrugs", 3, 10, 12, 2)] },
-    { id: "pu4", ex: [E("pu-tripress", "Triceps Press Machine", 3, 10, 12, 5), E("pu-pushdown", "Standing Cable Tricep Pushdown, Straight Bar", 3, 10, 12, 2.5)] } ] },
-  { id: "pull", name: "بول", groups: [
+  { id: "push", name: "صدر · أكتاف · تراي", groups: [
+    { id: "pu1", ex: [E("pu-incline", "Plate Loaded Incline Chest Press Machine", 3, 8, 10, 5), E("pu-reardelt", "Rear Delt Machine", 3, 10, 12, 5)] },
+    { id: "pu2", ex: [E("pu-ohp", "Selector Overhead Press Machine, Wide", 3, 8, 10, 5), E("pu-shrug", "Standing Dumbbell Shrugs", 3, 10, 12, 2)] },
+    { id: "pu3", ex: [E("pu-chest", "Selector Chest Press Machine", 3, 10, 12, 5), E("pu-pushdown", "Standing Cable Tricep Pushdown, Straight Bar", 3, 10, 12, 2.5)] },
+    { id: "pu4", ex: [E("pu-tripress", "Triceps Press Machine", 3, 10, 12, 5), E("pu-lateral", "Single Arm Cable Lateral Raise", 3, 10, 12, 2.5)] } ] },
+  { id: "pull", name: "ظهر · باي", groups: [
     { id: "pl1", ex: [E("pl-pulldown", "Selector Lat Pulldown, Wide Grip", 3, 8, 10, 5), E("pl-cablecurl", "Standing Cable Bicep Curl, Straight Bar", 3, 10, 12, 2.5)] },
     { id: "pl2", ex: [E("pl-cablerow", "Seated Cable Row, Close Grip (V-Bar)", 3, 8, 10, 5), E("pl-hammer", "Dumbbell Hammer Curl", 3, 10, 12, 2)] },
     { id: "pl3", ex: [E("pl-machrow", "Plate Loaded Row Machine (Chest Supported)", 3, 8, 10, 5), E("pl-curlmach", "Selector Biceps Curl Machine", 3, 10, 12, 5)] },
     { id: "pl4", ex: [E("pl-straightarm", "Cable Straight Arm Pulldown", 3, 10, 12, 2.5), E("pl-backext", "Back Extension", 3, 10, 12, 2.5)] } ] },
-  { id: "legs", name: "ليج", groups: [
+  { id: "legs", name: "أرجل", groups: [
     { id: "lg1", ex: [E("lg-press", "Plate Loaded Leg Press", 3, 8, 10, 10), E("lg-calf", "Standing Calf Raise Machine", 3, 12, 15, 5)] },
     { id: "lg2", ex: [E("lg-hack", "Plate Loaded Hack Squat", 3, 8, 10, 5), E("lg-curl", "Selector Seated Leg Curl", 3, 10, 12, 5)] },
     { id: "lg3", ex: [E("lg-rdl", "Dumbbell Romanian Deadlift", 3, 8, 10, 2), E("lg-ext", "Selector Leg Extension", 3, 10, 12, 5)] },
@@ -694,10 +694,10 @@ function coachContext() {
   }).filter(Boolean);
   return { today: new Date().toISOString().slice(0, 10), body_weight_kg: bodyW() || null, height_cm: (S.plan && S.plan.height) || null, age: (S.plan && S.plan.age) || null, body_log: bodySorted().slice(-10).map(x => { const o = { date: x.date.slice(0, 10) }; BODY_FIELDS.forEach(([k]) => { if (x[k]) o[k] = x[k]; }); return o; }), machine_notes: S.notes, total_sessions: list.length, plan, recent_sessions: recent, exercise_trends: trends };
 }
-const COACH_RULES = "You are the personal strength coach inside the user's workout app \"قوام\" (QAWAM). The user trains a push/pull/legs plan built from supersets on gym machines. " +
+const COACH_RULES = "You are the personal strength coach inside the user's workout app \"قوام\" (QAWAM). The user trains a 3-day split (chest/shoulders/triceps, back/biceps, legs; avoid the words push/pull/legs with this user) built from supersets on gym machines. " +
   "Reply in Saudi Arabic dialect, warm and direct, short paragraphs or short bullet lists, no tables. Use kg. Base every claim on the DATA below; if data is missing, say so plainly. " +
   "The app already applies double progression (raise weight when all sets reach the top of the rep range). Your job: read trends, spot stalls, explain technique, answer questions, and when a plan change is warranted, call propose_plan with the WHOLE plan. " +
-  "Keep each existing exercise's id when it stays the same exercise so its history stays linked. Each group is 1 exercise or a superset of 2 that do not tire the same muscle. Never claim a change was applied; the user taps Apply. " +
+  "Keep each existing exercise's id when it stays the same exercise so its history stays linked. Each group is 1 exercise or a superset of 2 whose primary muscles differ (never two triceps or two chest moves together). Never claim a change was applied; the user taps Apply. " +
   "For pain or injury, advise stopping that movement and seeing a professional. Use get_exercise_history when you need more than the summary.";
 const COACH_TOOLS = [
   { name: "get_exercise_history", description: "Returns every logged session for one exercise as lines 'date: weight×reps …'. Use when the trends summary is not enough.",
@@ -793,7 +793,7 @@ function viewCoach() {
   return h;
 }
 function reportText() {
-  return "أنا أتمرن بخطة بوش بول ليج بالسوبر ست وأسجل في تطبيق قوام. هذي بياناتي، حللها وقل لي وش أعدل في خطتي:\n\n" + JSON.stringify(coachContext(), null, 1);
+  return "أنا أتمرن ببرنامج ٣ أيام (صدر وأكتاف وتراي، ظهر وباي، أرجل) بالسوبر ست وأسجل في تطبيق قوام. هذي بياناتي، حللها وقل لي وش أعدل في خطتي:\n\n" + JSON.stringify(coachContext(), null, 1);
 }
 
 /* ---------- technique sheet ---------- */
@@ -1077,7 +1077,7 @@ const libEx = new Map(allEx(TEMPLATE).map(e => [e.id, e]));
 const L = id => clone(libEx.get(id));
 const G = (id, a, b) => ({ id, ex: b ? [L(a), L(b)] : [L(a)] });
 const PROGRAMS = [
-  { key: "ppl", title: "بوش بول ليج · سوبر ست", desc: "٣ أيام بالدورة، ٨ تمارين في اليوم مقسمة على ٤ سوبر ستات. مناسب من ٣ إلى ٦ أيام بالأسبوع.", plan: () => clone(TEMPLATE) },
+  { key: "ppl", title: "٣ أيام · سوبر ست", desc: "صدر وأكتاف وتراي، ظهر وباي، أرجل. ٣ أيام بالدورة، ٨ تمارين في اليوم مقسمة على ٤ سوبر ستات. مناسب من ٣ إلى ٦ أيام بالأسبوع.", plan: () => clone(TEMPLATE) },
   { key: "ul", title: "علوي / سفلي · ٤ أيام", desc: "يومين للجزء العلوي ويومين للسفلي، كل عضلة مرتين بالأسبوع. سوبر ست بين عضلات متقابلة.", plan: () => ({ rest: 90, days: [
     { id: "up1", name: "علوي ١", groups: [G("ua1", "pu-incline", "pl-machrow"), G("ua2", "pu-ohp", "pl-pulldown"), G("ua3", "pu-lateral", "pu-reardelt"), G("ua4", "pu-pushdown", "pl-cablecurl")] },
     { id: "lo1", name: "سفلي ١", groups: [G("la1", "lg-press", "lg-calf"), G("la2", "lg-rdl", "lg-ext"), G("la3", "lg-thrust", "lg-adduct"), G("la4", "pl-backext")] },
@@ -1190,6 +1190,43 @@ function cardioPreview() {
   const k = cardioKcal(e); return "المجموع " + e.min + " دقيقة" + (k ? " · ≈ " + k + " سعرة" : "");
 }
 
+/* ---------- superset checks and plan updates ---------- */
+function sharedPrimary(g) {
+  if (!g || g.ex.length < 2) return "";
+  const sets = g.ex.map(e => { const m = musclesFor(e.id); return m ? m.p.map(groupOf) : []; });
+  const hit = sets[0].find(x => sets.slice(1).every(o => o.includes(x)));
+  return hit || "";
+}
+const OLD_NAMES = { push: ["بوش"], pull: ["بول"], legs: ["ليج"] };
+function planUpdate(P) {
+  if (!P || P.updDismissed === 2) return null;
+  const changes = [], days = P.days || [];
+  const push = days.find(d => d.id === "push");
+  const bad = push && push.groups.find(g => g.ex.length > 1 && g.ex.some(e => e.id === "pu-tripress") && g.ex.some(e => e.id === "pu-pushdown"));
+  if (bad) changes.push("فصل تمريني التراي (Triceps Press و Pushdown) عن بعض، عشان ما يكون السوبر ست على نفس العضلة.");
+  const renames = days.filter(d => OLD_NAMES[d.id] && OLD_NAMES[d.id].includes(d.name));
+  if (renames.length) changes.push("تغيير أسماء الأيام إلى: صدر · أكتاف · تراي، ظهر · باي، أرجل.");
+  return changes.length ? changes : null;
+}
+async function applyPlanUpdate() {
+  const P = clone(S.plan), tpl = new Map(TEMPLATE.days.map(d => [d.id, d]));
+  P.days.forEach(d => {
+    if (OLD_NAMES[d.id] && OLD_NAMES[d.id].includes(d.name)) d.name = tpl.get(d.id).name;
+    if (d.id === "push") {
+      const mine = new Map(d.groups.flatMap(g => g.ex).map(e => [e.id, e]));
+      const want = tpl.get("push").groups;
+      if (want.every(g => g.ex.every(e => mine.has(e.id))) && mine.size === 8) d.groups = want.map(g => ({ id: g.id, ex: g.ex.map(e => mine.get(e.id)) }));
+    }
+  });
+  if (P.title === "بوش بول ليج · سوبر ست") P.title = "٣ أيام · سوبر ست";
+  await putPlan(P); S.draft = null; S.dirty = false;
+}
+function updateCard() {
+  const ch = planUpdate(S.plan); if (!ch) return "";
+  return '<section class="card stack" style="border-color:var(--secondary)"><span class="eyebrow">تحديث مقترح لبرنامجك</span><ul style="margin:0;padding-inline-start:18px;font-size:14px">' + ch.map(c => "<li>" + esc(c) + "</li>").join("") + "</ul>" +
+    '<p class="small muted">أوزانك وسجلك ما يتغيرون.</p><div class="row"><button class="btn cta sm" data-act="planUpd">طبّق التحديث</button><button class="btn ghost sm" data-act="planUpdNo">لا، خلّه مثل ما هو</button></div></section>';
+}
+
 /* ---------- router ---------- */
 const ROUTES = ["home", "library", "programs", "stats", "more", "coach", "workout"];
 const TAB_OF = { coach: "more", workout: "home" };
@@ -1238,8 +1275,8 @@ function render() {
 const navBtn = (v, label, icon, tab) => '<button data-act="go" data-v="' + v + '"' + (tab === v ? ' aria-current="page"' : "") + '><span class="ni">' + icon + "</span><span>" + label + "</span></button>";
 
 function noPlan() {
-  return emptyState("ابدأ ببرنامج", "اختر برنامج جاهز وعدّل عليه براحتك. بوش بول ليج: ٨ تمارين في اليوم، ٤ سوبر ستات.",
-    '<button class="btn cta" data-act="loadTemplate">ابدأ ببرنامج بوش بول ليج</button><button class="btn ghost sm" data-act="go" data-v="programs">شوف البرامج</button>');
+  return emptyState("ابدأ ببرنامج", "اختر برنامج جاهز وعدّل عليه براحتك. برنامج ٣ أيام: ٨ تمارين في اليوم، ٤ سوبر ستات.",
+    '<button class="btn cta" data-act="loadTemplate">ابدأ ببرنامج ٣ أيام</button><button class="btn ghost sm" data-act="go" data-v="programs">شوف البرامج</button>');
 }
 
 /* ---------- home ---------- */
@@ -1269,6 +1306,7 @@ function viewHome() {
       const hit = wk.some(s => { const t = new Date(s.date); t.setHours(0, 0, 0, 0); return +t === +d; });
       return '<div class="wd' + (hit ? " done" : td.includes(d.getDay()) ? " plan" : "") + (+d === +today ? " today" : "") + '"><span>' + WD[d.getDay()] + "</span><i>" + (hit ? "✓" : d.getDate()) + "</i></div>";
     }).join("") + "</div></section>";
+  h += updateCard();
   if (!S.active) {
     const nd = nextDay(), day = P.days.find(d => d.id === S.pickDay) || nd;
     const restDay = td.length && !td.includes(new Date().getDay());
@@ -1334,7 +1372,7 @@ function viewLibrary() {
 function viewPrograms() {
   if (S.progEdit) return '<section class="spread"><h2>تعديل البرنامج</h2><button class="btn primary sm" data-act="progEdit">تم</button></section>' + editorHtml();
   const P = S.plan;
-  let h = '<section class="sec-h"><h2>البرامج</h2></section>';
+  let h = '<section class="sec-h"><h2>البرامج</h2></section>' + updateCard();
   if (!P || !P.days.length) h += noPlan();
   else {
     h += '<section class="card stack"><div class="spread"><div><span class="eyebrow">برنامجك الحالي</span><h3 style="font-size:19px">' + esc(P.title || "برنامجي") + '</h3><span class="small muted">' + P.days.length + " أيام بالدورة · راحة " + (P.rest || 90) + " ث بين السوبر ستات</span></div>" +
@@ -1365,7 +1403,8 @@ function editorHtml() {
       '<button class="btn danger sm ' + (S.armed === "day:" + di ? "armed" : "") + '" data-act="delDay" data-d="' + di + '">' + (S.armed === "day:" + di ? "متأكد؟ احذف" : "احذف اليوم") + "</button></div>";
     d.groups.forEach((g, gi) => {
       const ss = g.ex.length > 1;
-      h += '<div class="group' + (ss ? " ss" : "") + '"><div class="group-h"><span>' + (ss ? "سوبر ست " + (gi + 1) : "تمرين " + (gi + 1)) + '</span><span class="row" style="gap:4px">' +
+      const shp = sharedPrimary(g);
+      h += '<div class="group' + (ss ? " ss" : "") + '"><div class="group-h"><span>' + (ss ? "سوبر ست " + (gi + 1) : "تمرين " + (gi + 1)) + (shp ? ' <span class="pill down" title="التمرينين يشغلون نفس العضلة الأساسية">نفس العضلة: ' + esc(shp) + "</span>" : "") + '</span><span class="row" style="gap:4px">' +
         '<button class="btn sm ghost" data-act="mvG" data-d="' + di + '" data-g="' + gi + '" data-dir="-1" aria-label="فوق"' + (gi === 0 ? " disabled" : "") + ">↑</button>" +
         '<button class="btn sm ghost" data-act="mvG" data-d="' + di + '" data-g="' + gi + '" data-dir="1" aria-label="تحت"' + (gi === d.groups.length - 1 ? " disabled" : "") + ">↓</button>" +
         (ss ? '<button class="btn sm ghost" data-act="unlink" data-d="' + di + '" data-g="' + gi + '">فك السوبر ست</button>' :
@@ -1881,6 +1920,8 @@ document.addEventListener("click", async e => {
     case "bodySave": await saveBodyForm(); break;
     case "bodyMetric": S.bodyMetric = b.dataset.v; render(); break;
     case "bodyDel": if (prevArmed === "body:" + b.dataset.id) { try { await dropBody(b.dataset.id); toast("انحذف"); } catch (x) { writeErr(x); } } else S.armed = "body:" + b.dataset.id; render(); break;
+    case "planUpd": try { await applyPlanUpdate(); toast("تحدّث برنامجك"); } catch (x) { writeErr(x); } render(); break;
+    case "planUpdNo": try { const P = clone(S.plan); P.updDismissed = 2; await putPlan(P); S.draft = null; } catch (x) { writeErr(x); } render(); break;
     case "calMove": { const [y, m] = S.calMonth; const d = new Date(y, m + +b.dataset.dir, 1); S.calMonth = [d.getFullYear(), d.getMonth()]; S.calDay = null; render(); break; }
     case "calDay": S.calDay = S.calDay === +b.dataset.d ? null : +b.dataset.d; render(); break;
     case "addGp": { const gi = document.getElementById("gpIn"); if (gi) gi.click(); break; }
