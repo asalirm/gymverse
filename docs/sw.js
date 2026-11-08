@@ -1,5 +1,5 @@
 // Offline support for QAWAM. Generated into docs/sw.js by scripts/build-pwa.mjs.
-const CACHE = "qawam-a7b298af53";
+const CACHE = "qawam-46b2c0fc4f";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 // Exercise photos (img/) are cached on first view by the fetch handler below.
 

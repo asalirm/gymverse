@@ -399,7 +399,8 @@ const lsGet = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (
 const lsSet = (k, v) => { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 const dateFmt = (iso, opts) => { try { return new Date(iso).toLocaleDateString("ar-SA-u-nu-latn-ca-gregory", opts || { weekday: "short", day: "numeric", month: "short" }); } catch (e) { return iso.slice(0, 10); } };
 const mmss = s => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
-const LETTERS = ["أ", "ب", "ج", "د"];
+const rng = e => (e.min === e.max ? String(e.min) : e.min + "–" + e.max);
+const LETTERS = ["أ", "ب", "ج", "د", "هـ", "و", "ز", "ح"];
 const ICON = {
   today: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 10v4M21 10v4M6 7v10M18 7v10M6 12h12"/></svg>',
   prog: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 16l4-5 4 3 6-8"/></svg>',
@@ -437,6 +438,12 @@ const TEMPLATE = { rest: 90, days: [
     { id: "lg3", ex: [E("lg-rdl", "Dumbbell Romanian Deadlift", 3, 8, 10, 2), E("lg-ext", "Selector Leg Extension", 3, 10, 12, 5)] },
     { id: "lg4", ex: [E("lg-thrust", "Hip Thrust Machine", 3, 10, 12, 5), E("lg-adduct", "Selector Hip Adduction", 3, 12, 15, 5)] } ] }
 ] };
+// Kettlebell conditioning day: one circuit of 7 moves, 3 rounds, cardio required afterwards.
+const KB_DAY = { id: "kb", name: "كتل بيل · دائرة", cardioRequired: true, groups: [
+  { id: "kb1", ex: [E("kb-swing-ru", "Kettlebell Russian Swing", 3, 20, 20, 4), E("kb-lunge", "Kettlebell Goblet Lunge (each leg)", 3, 14, 14, 4),
+    E("kb-row", "Kettlebell Bent-Over Row", 3, 14, 14, 4), E("kb-press", "Kettlebell Goblet Press", 3, 12, 12, 4), E("kb-thruster", "Kettlebell Thruster", 3, 14, 14, 4),
+    E("kb-swing-us", "Kettlebell American Swing", 3, 20, 20, 4), E("kb-atw", "Kettlebell Around the World", 3, 12, 12, 4)] } ] };
+const isCircuit = g => g && g.ex.length > 2;
 
 /* ---------- state ---------- */
 const S = {
@@ -585,7 +592,7 @@ function photoSet(id, data) {
   catch (e) { toast("ما فيه مساحة كافية للصورة. احذف صور ما تحتاجها."); return false; }
 }
 function photoAll() { const o = {}; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf("gv.img.") === 0) o[k.slice(7)] = localStorage.getItem(k); } } catch (e) {} return o; }
-const STOCK = new Set(["pu-incline","pu-lateral","pu-chest","pu-reardelt","pu-ohp","pu-shrug","pu-tripress","pu-pushdown","pl-pulldown","pl-cablecurl","pl-cablerow","pl-hammer","pl-machrow","pl-curlmach","pl-straightarm","pl-backext","lg-press","lg-calf","lg-hack","lg-curl","lg-rdl","lg-ext","lg-thrust","lg-adduct"]);
+const STOCK = new Set(["kb-swing-ru","kb-swing-us","kb-lunge","kb-row","kb-thruster","pu-incline","pu-lateral","pu-chest","pu-reardelt","pu-ohp","pu-shrug","pu-tripress","pu-pushdown","pl-pulldown","pl-cablecurl","pl-cablerow","pl-hammer","pl-machrow","pl-curlmach","pl-straightarm","pl-backext","lg-press","lg-calf","lg-hack","lg-curl","lg-rdl","lg-ext","lg-thrust","lg-adduct"]);
 const stockSrc = (id, n) => STOCK.has(id) ? "img/" + id + "-" + n + ".jpg" : "";
 function thumb(ex, mark, asSpan) {
   const src = photoGet(ex.id) || stockSrc(ex.id, 0), tag = asSpan ? "span" : "button";
@@ -616,6 +623,13 @@ function pickPhoto(id) { photoTarget = id; const inp = document.getElementById("
 /* ---------- technique notes (Arabic) for the template exercises ---------- */
 const T = (steps, tips, avoid) => ({ steps, tips, avoid });
 const TECH = {
+  "kb-swing-ru": T(["قف والكتل بيل قدامك بشوي، وقدمك أعرض من الكتف.", "انحني من الورك وظهرك مستقيم، ومرّر الكتل بيل بين رجولك.", "ادفع وركك للأمام بقوة، وخل الكتل بيل يطلع لين مستوى الصدر.", "خله ينزل بين رجولك، وأنت ترجع وركك للخلف."], ["القوة من الورك والمؤخرة، مو من الذراع.", "شد بطنك ومؤخرتك فوق."], ["ثني الركبة كأنه سكوات.", "رفع الكتل بيل بالكتف."]),
+  "kb-swing-us": T(["نفس السوينق الروسي في البداية.", "ادفع وركك بقوة وكمّل الحركة لين يصير الكتل بيل فوق راسك وذراعك مفرودة.", "خله ينزل بتحكم بين رجولك."], ["شد بطنك فوق ولا تقوّس ظهرك.", "إذا كتفك يوجعك فوق راسك، وقّف عند مستوى العين."], ["تقويس أسفل الظهر فوق.", "الرفع بالذراع بدال الورك."]),
+  "kb-lunge": T(["امسك الكتل بيل من القرون عند صدرك.", "خذ خطوة للأمام أو للخلف، وانزل لين الركبة الخلفية تقرب من الأرض.", "ادفع بكعب الرجل الأمامية وارجع.", "كمّل ١٤ لكل رجل."], ["خل جسمك مستقيم والكتل بيل قريب منك.", "خل ركبتك الأمامية فوق قدمك."], ["دخول الركبة للداخل.", "الميل للأمام."]),
+  "kb-row": T(["امسك الكتل بيل، وانحني من الورك لين يصير ظهرك شبه موازي للأرض.", "اسحب الكتل بيل لجهة خصرك، وكوعك قريب من جسمك.", "اعصر ظهرك ثانية، ونزّل ببطء."], ["خل ظهرك مستقيم وركبتك منحنية شوي.", "ابدأ السحبة بإنزال لوح الكتف."], ["تقويس الظهر.", "هز الجسم."]),
+  "kb-press": T(["امسك الكتل بيل من القرون عند صدرك.", "اضغطه لفوق راسك لين تفرد ذراعك.", "نزّله ببطء لصدرك."], ["شد بطنك ومؤخرتك.", "خل الكتل بيل قريب من وجهك وأنت تطلعه."], ["تقويس أسفل الظهر.", "دفع الراس للأمام."]),
+  "kb-thruster": T(["امسك الكتل بيل عند صدرك، وقدمك بعرض الكتف.", "انزل سكوات لين يصير فخذك موازي للأرض.", "اطلع بقوة، واستغل الدفعة واضغط الكتل بيل فوق راسك.", "نزّله لصدرك وأنت نازل للسكوات اللي بعدها."], ["الحركة وحدة متصلة من الرجل للذراع.", "خل كعبك على الأرض."], ["الضغط بالذراع لحالها بدون دفعة الرجل.", "تقويس الظهر فوق."]),
+  "kb-atw": T(["قف والكتل بيل في يدك قدام جسمك.", "مرّره حول خصرك من يد ليد.", "كمّل الدوران، وبعدها غيّر الاتجاه."], ["شد بطنك وخل وركك ثابت.", "خل الحركة سلسة ومتحكم فيها."], ["تحريك الورك مع الكتل بيل.", "السرعة على حساب التحكم."]),
   "pu-incline": T(["اضبط المقعد بحيث تكون المقابض على مستوى أعلى صدرك.", "ثبّت ظهرك على المسند، ورجّع لوحي الكتف للخلف وللأسفل.", "ادفع للأمام وللأعلى لين تقرب تفرد ذراعك، بدون ما تقفل الكوع.", "ارجع ببطء (٢–٣ ثواني) لين تحس بتمدد في الصدر."], ["خل الأكواع بزاوية ٤٥–٦٠ درجة من جسمك.", "ازفر مع الدفع، وخذ نفس وأنت راجع."], ["رفع الكتف أو الظهر عن المسند.", "الارتداد السريع في آخر الحركة تحت."]),
   "pu-lateral": T(["اضبط البكرة على أسفل شي، وامسك المقبض باليد البعيدة عن الجهاز.", "قف بجنبك للجهاز، والكيبل يمر قدام جسمك.", "ارفع ذراعك للجنب بكوع منحني شوي، لين توصل مستوى الكتف.", "نزّلها ببطء وبتحكم."], ["فكّر إنك ترفع بالكوع مو بالكف.", "ميل خفيف بجسمك بعيد عن الجهاز يزيد مدى الحركة."], ["هز الجسم عشان ترفع الوزن.", "رفع الكتف لجهة الأذن، لأن الترابيس تاخذ الشغل بدال الكتف."]),
   "pu-chest": T(["اضبط المقعد بحيث تكون المقابض على مستوى منتصف صدرك.", "ظهرك ملاصق للمسند، ولوحا الكتف للخلف.", "ادفع للأمام لين تقرب تفرد ذراعك.", "ارجع ببطء لين تحس بتمدد الصدر."], ["القدمين ثابتة على الأرض.", "اعصر صدرك ثانية في آخر الدفعة."], ["قفل الكوع بقوة في آخر الحركة.", "تقديم الكتف للأمام مع الدفع."]),
@@ -645,6 +659,13 @@ const TECH = {
 /* ---------- target muscles (primary / supporting) ---------- */
 const MU = (p, s) => ({ p, s });
 const MUSCLES = {
+  "kb-swing-ru": MU(["المؤخرة", "الخلفية"], ["أسفل الظهر", "الساعد (القبضة)"]),
+  "kb-swing-us": MU(["المؤخرة", "الخلفية"], ["مقدمة الكتف", "أسفل الظهر"]),
+  "kb-lunge": MU(["الفخذ الأمامي", "المؤخرة"], ["الخلفية", "الفخذ الداخلي"]),
+  "kb-row": MU(["المجنص (اللاتس)", "منتصف الظهر"], ["الباي", "خلفي الكتف"]),
+  "kb-press": MU(["مقدمة الكتف"], ["التراي", "الصدر العلوي"]),
+  "kb-thruster": MU(["الفخذ الأمامي", "مقدمة الكتف"], ["المؤخرة", "التراي"]),
+  "kb-atw": MU(["البطن (الجذع)"], ["الساعد (القبضة)", "مقدمة الكتف"]),
   "pu-incline": MU(["الصدر العلوي"], ["مقدمة الكتف", "التراي"]),
   "pu-lateral": MU(["الكتف الجانبي"], ["الترابيس", "مقدمة الكتف"]),
   "pu-chest": MU(["الصدر"], ["مقدمة الكتف", "التراي"]),
@@ -714,7 +735,7 @@ function coachContext() {
 const COACH_RULES = "You are the personal strength coach inside the user's workout app \"قوام\" (QAWAM). The user trains a 3-day split (chest/shoulders/triceps, back/biceps, legs; avoid the words push/pull/legs with this user) built from supersets on gym machines. " +
   "Reply in Saudi Arabic dialect, warm and direct, short paragraphs or short bullet lists, no tables. Use kg. Base every claim on the DATA below; if data is missing, say so plainly. " +
   "The app already applies double progression (raise weight when all sets reach the top of the rep range). Your job: read trends, spot stalls, explain technique, answer questions, and when a plan change is warranted, call propose_plan with the WHOLE plan. " +
-  "Keep each existing exercise's id when it stays the same exercise so its history stays linked. Each group is 1 exercise or a superset of 2 whose primary muscles differ (never two triceps or two chest moves together). Never claim a change was applied; the user taps Apply. " +
+  "Keep each existing exercise's id when it stays the same exercise so its history stays linked. Each group is 1 exercise, a superset of 2 whose primary muscles differ, or a circuit of 3-8 for conditioning days (never two triceps or two chest moves together). Never claim a change was applied; the user taps Apply. " +
   "For pain or injury, advise stopping that movement and seeing a professional. Use get_exercise_history when you need more than the summary.";
 const COACH_TOOLS = [
   { name: "get_exercise_history", description: "Returns every logged session for one exercise as lines 'date: weight×reps …'. Use when the trends summary is not enough.",
@@ -743,7 +764,7 @@ function normalizePlan(i) {
   const days = (Array.isArray(i.days) ? i.days : []).map(d => ({
     id: d && knownDays.has(String(d.id)) ? String(d.id) : "d" + uid(),
     name: String((d && d.name) || "").trim(),
-    groups: (Array.isArray(d && d.groups) ? d.groups : []).map(g => (Array.isArray(g) ? g : [g]).filter(Boolean).slice(0, 2)).filter(g => g.length).map(g => ({
+    groups: (Array.isArray(d && d.groups) ? d.groups : []).map(g => (Array.isArray(g) ? g : [g]).filter(Boolean).slice(0, 8)).filter(g => g.length).map(g => ({
       id: "g" + uid(),
       ex: g.map(e => {
         const old = knownEx.get(String(e.id));
@@ -759,7 +780,7 @@ function normalizePlan(i) {
 function pendingHtml() {
   const P = S.pending; if (!P) return "";
   return '<div class="card proposal"><span class="eyebrow">تعديل مقترح على الخطة</span><p style="margin:0">' + esc(P.summary) + "</p>" +
-    P.plan.days.map(d => '<div><b>' + esc(d.name) + "</b><ul>" + d.groups.map(g => '<li class="ex-name">' + g.ex.map(e => esc(e.name) + ' <span class="muted num">' + e.sets + "×" + e.min + "–" + e.max + "</span>").join(" + ") + "</li>").join("") + "</ul></div>").join("") +
+    P.plan.days.map(d => '<div><b>' + esc(d.name) + "</b><ul>" + d.groups.map(g => '<li class="ex-name">' + g.ex.map(e => esc(e.name) + ' <span class="muted num">' + e.sets + "×" + rng(e) + "</span>").join(" + ") + "</li>").join("") + "</ul></div>").join("") +
     '<div class="row"><button class="btn primary" data-act="applyPlan">طبّق التعديل</button><button class="btn ghost" data-act="dismissPlan">تجاهل</button></div></div>';
 }
 function paintPending() { const el = document.getElementById("pendingBox"); if (el) el.innerHTML = pendingHtml(); }
@@ -981,7 +1002,7 @@ async function saveNote(id) {
 }
 
 /* ---------- weekly sets per muscle ---------- */
-const GROUPS = [["أسفل الظهر", "أسفل الظهر"], ["الصدر", "الصدر"], ["مقدمة الكتف", "كتف أمامي"], ["الكتف الجانبي", "كتف جانبي"], ["خلفي الكتف", "كتف خلفي"],
+const GROUPS = [["أسفل الظهر", "أسفل الظهر"], ["البطن", "البطن"], ["الصدر", "الصدر"], ["مقدمة الكتف", "كتف أمامي"], ["الكتف الجانبي", "كتف جانبي"], ["خلفي الكتف", "كتف خلفي"],
   ["الترابيس", "الترابيس"], ["التراي", "التراي"], ["الباي", "الباي"], ["البراكياليس", "الساعد"], ["الساعد", "الساعد"], ["المجنص", "الظهر"], ["اللاتس", "الظهر"],
   ["منتصف الظهر", "الظهر"], ["أعلى الظهر", "الظهر"], ["المعينية", "الظهر"], ["الفخذ الأمامي", "الفخذ الأمامي"], ["الخلفية", "الخلفية"], ["المؤخرة", "المؤخرة"],
   ["الفخذ الداخلي", "الفخذ الداخلي"], ["الضامة", "الفخذ الداخلي"], ["السمانة", "السمانة"], ["النعلية", "السمانة"]];
@@ -1079,6 +1100,8 @@ function bmr() {
 
 /* ---------- Arabic exercise names ---------- */
 const AR = {
+  "kb-swing-ru": "سوينق روسي كتل بيل", "kb-swing-us": "سوينق أمريكي كتل بيل", "kb-lunge": "لونجز جوبلت كتل بيل", "kb-row": "تجديف منحني كتل بيل",
+  "kb-press": "جوبلت برس كتل بيل", "kb-thruster": "ثرستر كتل بيل", "kb-atw": "أراوند ذا ورلد كتل بيل",
   "pu-incline": "ضغط صدر عالي بالجهاز", "pu-lateral": "رفرفة جانبية بالكيبل", "pu-chest": "ضغط صدر بالجهاز", "pu-reardelt": "فراشة عكسية لخلفي الكتف",
   "pu-ohp": "ضغط أكتاف بالجهاز", "pu-shrug": "هز الأكتاف بالدمبل", "pu-tripress": "ضغط تراي بالجهاز", "pu-pushdown": "تراي بوش داون بالكيبل",
   "pl-pulldown": "سحب أمامي واسع", "pl-cablecurl": "باي بالكيبل", "pl-cablerow": "سحب أرضي بالكيبل", "pl-hammer": "هامر بالدمبل",
@@ -1090,7 +1113,7 @@ const arName = (id, fallback) => fallback || exName(id) || AR[id] || "تمرين
 const enName = () => "";
 
 /* ---------- ready-made programs ---------- */
-const libEx = new Map(allEx(TEMPLATE).map(e => [e.id, e]));
+const libEx = new Map(allEx({ days: TEMPLATE.days.concat([KB_DAY]) }).map(e => [e.id, e]));
 const L = id => clone(libEx.get(id));
 const G = (id, a, b) => ({ id, ex: b ? [L(a), L(b)] : [L(a)] });
 const PROGRAMS = [
@@ -1176,7 +1199,7 @@ function cardioText(c) {
   return "كارديو " + w + ": " + d;
 }
 const sessCardioMin = s => (s.cardio || []).reduce((a, c) => a + (c.min || 0), 0);
-function openCardio() { S.cardio = { step: "ask", when: "after", type: "run", mode: "details", run: "", walk: "", min: "", dist: "" }; renderOverlay(); }
+function openCardio() { const req = !!(S.active && S.active.day.cardioRequired); S.cardio = { required: req, step: req ? "form" : "ask", when: "after", type: "run", mode: "details", run: "", walk: "", min: "", dist: "" }; renderOverlay(); }
 function cardioSheet() {
   const c = S.cardio;
   if (c.step === "ask") return '<div class="scrim" data-act="cardioClose"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="cdh">' +
@@ -1186,14 +1209,14 @@ function cardioSheet() {
   const isRun = c.type === "run", details = c.mode === "details";
   const f = (k, label, unit, mode) => '<label for="cf-' + k + '">' + label + '<input id="cf-' + k + '" data-cf="' + k + '" type="number" inputmode="' + (mode || "numeric") + '" min="0" step="' + (k === "dist" ? "0.1" : "1") + '" value="' + esc(c[k]) + '" placeholder="' + unit + '"></label>';
   return '<div class="scrim" data-act="cardioClose"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="cdh">' +
-    '<span class="eyebrow">الكارديو</span><h2 id="cdh">تفاصيل الكارديو</h2>' +
+    '<span class="eyebrow">' + (c.required ? "الكارديو إلزامي في هاليوم" : "الكارديو") + '</span><h2 id="cdh">' + (c.required ? "سجّل الكارديو عشان تنهي التمرين" : "تفاصيل الكارديو") + "</h2>" +
     '<div class="stack"><b class="small">متى؟</b><div class="seg" role="group" aria-label="متى"><button data-act="cf" data-k="when" data-v="before" aria-pressed="' + (c.when === "before") + '">قبل التمرين</button><button data-act="cf" data-k="when" data-v="after" aria-pressed="' + (c.when === "after") + '">بعد التمرين</button></div></div>' +
     '<div class="stack"><b class="small">النوع</b><div class="chips">' + CARDIO.map(t => '<button class="chip" data-act="cf" data-k="type" data-v="' + t.k + '" aria-pressed="' + (c.type === t.k) + '">' + t.l + "</button>").join("") + "</div></div>" +
     '<div class="stack"><b class="small">وش تبي تسجل؟</b><div class="seg" role="group" aria-label="التفاصيل"><button data-act="cf" data-k="mode" data-v="details" aria-pressed="' + details + '">بالتفاصيل</button><button data-act="cf" data-k="mode" data-v="time" aria-pressed="' + !details + '">المدة بس</button></div></div>' +
     '<div class="form-grid">' + (details && isRun ? f("run", "دقايق الجري", "مثلاً 20") + f("walk", "دقايق المشي", "مثلاً 10") : f("min", "المدة (دقيقة)", "مثلاً 25")) +
     (details ? f("dist", "المسافة (كم) اختياري", "مثلاً 3.5", "decimal") : "") + "</div>" +
     '<p class="small muted" id="cfK">' + cardioPreview() + "</p>" +
-    '<button class="btn cta big" data-act="cardioSave">احفظ وأنهِ التمرين</button><button class="btn ghost" data-act="cardioBack">رجوع</button></div></div>';
+    '<button class="btn cta big" data-act="cardioSave">احفظ وأنهِ التمرين</button>' + (c.required ? '<button class="btn ghost" data-act="cardioClose">رجوع للتمرين</button>' : '<button class="btn ghost" data-act="cardioBack">رجوع</button>') + "</div></div>";
 }
 function cardioEntry() {
   const c = S.cardio, n = v => Math.max(0, Math.round(parseFloat(v) || 0)), isRunD = c.type === "run" && c.mode === "details";
@@ -1209,7 +1232,7 @@ function cardioPreview() {
 
 /* ---------- superset checks and plan updates ---------- */
 function sharedPrimary(g) {
-  if (!g || g.ex.length < 2) return "";
+  if (!g || g.ex.length !== 2) return "";
   const sets = g.ex.map(e => { const m = musclesFor(e.id); return m ? m.p.map(groupOf) : []; });
   const hit = sets[0].find(x => sets.slice(1).every(o => o.includes(x)));
   return hit || "";
@@ -1332,7 +1355,7 @@ function viewHome() {
       "<h2>" + esc(day.name) + "</h2>" +
       '<div class="small muted">' + day.groups.reduce((a, g) => a + g.ex.length, 0) + " تمارين · " + day.groups.filter(g => g.ex.length > 1).length + " سوبر ست · حوالي " + estMinutes(day) + " دقيقة" + (last ? " · آخر مرة " + esc(dateFmt(last.date, { day: "numeric", month: "short" })) : "") + "</div>" +
       (focus.length ? '<div class="chips">' + focus.slice(0, 6).map(f => '<span class="mchip s">' + esc(f) + "</span>").join("") + "</div>" : "") +
-      '<ul class="exlist">' + day.groups.map((g, gi) => g.ex.map((e, ei) => '<li><span class="k">' + (gi + 1) + (g.ex.length > 1 ? LETTERS[ei] : "") + '</span><span class="n">' + esc(arName(e.id, e.name)) + '</span><span class="s num">' + e.sets + "×" + e.min + "–" + e.max + "</span></li>").join("")).join("") + "</ul>" +
+      '<ul class="exlist">' + day.groups.map((g, gi) => g.ex.map((e, ei) => '<li><span class="k">' + (gi + 1) + (g.ex.length > 1 ? LETTERS[ei] : "") + '</span><span class="n">' + esc(arName(e.id, e.name)) + '</span><span class="s num">' + e.sets + "×" + rng(e) + "</span></li>").join("")).join("") + "</ul>" +
       '<div class="chips" role="group" aria-label="اختر يوم ثاني">' + P.days.map(d => '<button class="chip" data-act="pickDay" data-id="' + esc(d.id) + '" aria-pressed="' + (d.id === day.id) + '">' + esc(d.name) + "</button>").join("") + "</div>" +
       '<button class="btn cta big" data-act="start" data-id="' + esc(day.id) + '">ابدأ التمرين</button></section>';
   }
@@ -1372,7 +1395,7 @@ function libItemsHtml() {
     const h = history(ex.id), last = h.length ? Math.max(...h[h.length - 1].sets.map(s => s.w)) : null;
     return '<div class="lib-item" role="button" tabindex="0" data-act="photo" data-ex="' + esc(ex.id) + '">' + thumb(ex, "", true) + '<div style="flex:1;min-width:0"><div class="ex-name">' + esc(arName(ex.id, ex.name)) + "</div>" +
       (enName(ex.id, ex.name) ? '<div class="ex-en">' + esc(ex.name) + "</div>" : "") + musLine(ex.id) +
-      '<div class="meta"><span><b class="num">' + ex.sets + "×" + ex.min + "–" + ex.max + "</b> عدات</span><span>راحة <b class=\"num\">" + ((S.plan && S.plan.rest) || 90) + "</b> ث</span>" +
+      '<div class="meta"><span><b class="num">' + ex.sets + "×" + rng(ex) + "</b> عدات</span><span>راحة <b class=\"num\">" + ((S.plan && S.plan.rest) || 90) + "</b> ث</span>" +
       (last != null ? "<span>آخر وزن <b class=\"num\">" + fmt(last) + "</b> كغ</span>" : "") + (inPlan ? "" : "<span>مو في برنامجك</span>") + "</div></div></div>";
   }).join("");
 }
@@ -1397,10 +1420,11 @@ function viewPrograms() {
       P.days.map(d => {
         const last = lastOfDay(d.id);
         return '<div class="pday"><div class="spread"><b>' + esc(d.name) + '</b><span class="small muted">' + (last ? "آخر مرة " + esc(dateFmt(last.date, { day: "numeric", month: "short" })) : "ما تمرنته قبل") + " · ~" + estMinutes(d) + " د</span></div>" +
-          '<ul class="exlist">' + d.groups.map((g, gi) => g.ex.map((e, ei) => '<li><span class="k">' + (gi + 1) + (g.ex.length > 1 ? LETTERS[ei] : "") + '</span><span class="n">' + esc(arName(e.id, e.name)) + '</span><span class="s num">' + e.sets + "×" + e.min + "–" + e.max + "</span></li>").join("")).join("") + "</ul>" +
+          '<ul class="exlist">' + d.groups.map((g, gi) => g.ex.map((e, ei) => '<li><span class="k">' + (gi + 1) + (g.ex.length > 1 ? LETTERS[ei] : "") + '</span><span class="n">' + esc(arName(e.id, e.name)) + '</span><span class="s num">' + e.sets + "×" + rng(e) + "</span></li>").join("")).join("") + "</ul>" +
           '<button class="btn primary sm" data-act="start" data-id="' + esc(d.id) + '"' + (S.active ? " disabled" : "") + ">ابدأ " + esc(d.name) + "</button></div>";
       }).join("") + "</section>";
   }
+  if (P && P.days.length && !P.days.some(d => d.id === "kb")) h += '<section class="card stack"><span class="eyebrow">يوم إضافي</span><b>كتل بيل · دائرة</b><p class="small muted">٧ تمارين ورا بعض (سوينق روسي وأمريكي، لونجز، تجديف، جوبلت برس، ثرستر، أراوند ذا ورلد) × ٣ دورات، وبعدها كارديو إلزامي. ينضاف بعد اليوم الأول عشان يكون بينه وبين يوم الأرجل يوم.</p><div><button class="btn primary sm" data-act="addKB">أضفه لبرنامجي</button></div></section>';
   h += '<section class="stack"><h3>برامج جاهزة</h3>' + PROGRAMS.map(pr => {
     const cur = P && P.key === pr.key, armed = S.armed === "prog:" + pr.key;
     return '<div class="card ptpl' + (cur ? " current" : "") + '"><div class="spread"><b>' + esc(pr.title) + "</b>" + (cur ? '<span class="pill up">برنامجك الحالي</span>' : "") + '</div><p class="small muted">' + esc(pr.desc) + "</p>" +
@@ -1417,11 +1441,13 @@ function editorHtml() {
     '<p class="small muted" style="margin-top:8px">زيادة الوزن لكل تمرين: لما تكمل أعلى عدد عدات في كل الجولات، يقترح عليك التطبيق الوزن الجديد بهالمقدار.</p></div>';
   D.days.forEach((d, di) => {
     h += '<section class="day-ed"><div class="spread"><input id="dn-' + di + '" aria-label="اسم اليوم" data-pf="dayName" data-d="' + di + '" value="' + esc(d.name) + '">' +
-      '<button class="btn danger sm ' + (S.armed === "day:" + di ? "armed" : "") + '" data-act="delDay" data-d="' + di + '">' + (S.armed === "day:" + di ? "متأكد؟ احذف" : "احذف اليوم") + "</button></div>";
+      '<span class="row" style="gap:4px"><button class="btn sm ghost" data-act="mvD" data-d="' + di + '" data-dir="-1" aria-label="قدّم اليوم"' + (di === 0 ? " disabled" : "") + '>↑</button><button class="btn sm ghost" data-act="mvD" data-d="' + di + '" data-dir="1" aria-label="أخّر اليوم"' + (di === D.days.length - 1 ? " disabled" : "") + ">↓</button>" +
+      '<button class="btn danger sm ' + (S.armed === "day:" + di ? "armed" : "") + '" data-act="delDay" data-d="' + di + '">' + (S.armed === "day:" + di ? "متأكد؟ احذف" : "احذف") + "</button></span></div>" +
+      '<button class="chip" style="align-self:flex-start" data-act="cardioReq" data-d="' + di + '" aria-pressed="' + !!d.cardioRequired + '">' + (d.cardioRequired ? "✓ " : "") + "كارديو إلزامي بعد هاليوم</button>";
     d.groups.forEach((g, gi) => {
       const ss = g.ex.length > 1;
       const shp = sharedPrimary(g);
-      h += '<div class="group' + (ss ? " ss" : "") + '"><div class="group-h"><span>' + (ss ? "سوبر ست " + (gi + 1) : "تمرين " + (gi + 1)) + (shp ? ' <span class="pill down" title="التمرينين يشغلون نفس العضلة الأساسية">نفس العضلة: ' + esc(shp) + "</span>" : "") + '</span><span class="row" style="gap:4px">' +
+      h += '<div class="group' + (ss ? " ss" : "") + '"><div class="group-h"><span>' + (isCircuit(g) ? "دائرة " + (gi + 1) : ss ? "سوبر ست " + (gi + 1) : "تمرين " + (gi + 1)) + (shp ? ' <span class="pill down" title="التمرينين يشغلون نفس العضلة الأساسية">نفس العضلة: ' + esc(shp) + "</span>" : "") + '</span><span class="row" style="gap:4px">' +
         '<button class="btn sm ghost" data-act="mvG" data-d="' + di + '" data-g="' + gi + '" data-dir="-1" aria-label="فوق"' + (gi === 0 ? " disabled" : "") + ">↑</button>" +
         '<button class="btn sm ghost" data-act="mvG" data-d="' + di + '" data-g="' + gi + '" data-dir="1" aria-label="تحت"' + (gi === d.groups.length - 1 ? " disabled" : "") + ">↓</button>" +
         (ss ? '<button class="btn sm ghost" data-act="unlink" data-d="' + di + '" data-g="' + gi + '">فك السوبر ست</button>' :
@@ -1439,7 +1465,7 @@ function editorHtml() {
           '<label for="in-' + id + '">زيادة (كغ)<input id="in-' + id + '" type="number" inputmode="decimal" min="0" step="0.5" data-pf="inc" ' + p + ' value="' + ex.inc + '"></label>' +
           "</div></div>";
       });
-      if (g.ex.length < 2) h += '<div class="ex-ed" style="padding-top:0"><button class="btn sm ghost" data-act="addToG" data-d="' + di + '" data-g="' + gi + '">+ حوّله سوبر ست بتمرين ثاني</button></div>';
+      if (g.ex.length < 8) h += '<div class="ex-ed" style="padding-top:0"><button class="btn sm ghost" data-act="addToG" data-d="' + di + '" data-g="' + gi + '">' + (g.ex.length < 2 ? "+ حوّله سوبر ست بتمرين ثاني" : g.ex.length === 2 ? "+ حوّله دائرة بتمرين ثالث" : "+ أضف تمرين للدائرة") + "</button></div>";
       h += "</div>";
     });
     h += '<div class="row"><button class="btn sm" data-act="addSS" data-d="' + di + '">+ سوبر ست</button><button class="btn sm" data-act="addEx" data-d="' + di + '">+ تمرين منفرد</button></div></section>';
@@ -1470,18 +1496,18 @@ function viewWorkout() {
   day.groups.forEach((g, gi) => {
     const st = groupStatus(A, g), ss = g.ex.length > 1, isDone = st.d === st.t;
     if (gi !== open) {
-      h += '<button class="wg-h' + (isDone ? " done" : "") + '" data-act="wOpen" data-g="' + gi + '"><span class="idx">' + (isDone ? "✓" : gi + 1) + '</span><span class="n">' + g.ex.map(e => esc(arName(e.id, e.name))).join(" + ") + "</span>" +
+      h += '<button class="wg-h' + (isDone ? " done" : "") + '" data-act="wOpen" data-g="' + gi + '"><span class="idx">' + (isDone ? "✓" : gi + 1) + '</span><span class="n">' + (isCircuit(g) ? "دائرة: " + g.ex.length + " تمارين × " + Math.max(...g.ex.map(e => e.sets)) + " دورات" : g.ex.map(e => esc(arName(e.id, e.name))).join(" + ")) + "</span>" +
         '<span class="small muted num">' + st.d + "/" + st.t + "</span></button>";
       return;
     }
-    h += '<div class="group' + (ss ? " ss" : "") + '"><div class="group-h"><span>' + (ss ? "سوبر ست " + (gi + 1) + " · بدّل بين التمرينين بدون راحة" : "تمرين " + (gi + 1)) + "</span>" + (gi === cur && !isDone ? '<span class="current-tag">الحالي</span>' : '<span class="small muted num">' + st.d + "/" + st.t + "</span>") + "</div>";
+    h += '<div class="group' + (ss ? " ss" : "") + '"><div class="group-h"><span>' + (isCircuit(g) ? "دائرة · " + g.ex.length + " تمارين ورا بعض بدون راحة، وبعدها راحة وتعيد · " + Math.max(...g.ex.map(e => e.sets)) + " دورات" : ss ? "سوبر ست " + (gi + 1) + " · بدّل بين التمرينين بدون راحة" : "تمرين " + (gi + 1)) + "</span>" + (gi === cur && !isDone ? '<span class="current-tag">الحالي</span>' : '<span class="small muted num">' + st.d + "/" + st.t + "</span>") + "</div>";
     g.ex.forEach((ex, ei) => {
       const sg = suggest(ex), hist = history(ex.id);
       const rows = A.log[ex.id] || [], pv = (A.prev && A.prev[ex.id]) || [];
       const allDone = rows.length && rows.every(x => x.done), better = allDone && exImproved(A, ex.id);
       h += '<div class="ex">' + demoHtml(ex) + '<div class="ex-h">' + (ss ? '<span class="mark">' + LETTERS[ei] + "</span>" : "") + '<div style="min-width:0;flex:1"><div class="ex-name">' + esc(arName(ex.id, ex.name)) + "</div>" +
         (enName(ex.id, ex.name) ? '<div class="ex-en">' + esc(ex.name) + "</div>" : "") +
-        '<div class="ex-target"><span class="num">' + ex.sets + " × " + ex.min + "–" + ex.max + "</span> عدات</div>" + musLine(ex.id) + '<div class="exlinks">' + techBtn(ex) + noteLine(ex.id) + "</div>" +
+        '<div class="ex-target"><span class="num">' + ex.sets + " × " + rng(ex) + "</span> عدات</div>" + musLine(ex.id) + '<div class="exlinks">' + techBtn(ex) + noteLine(ex.id) + "</div>" +
         (better ? '<span class="fire' + (S.fresh === ex.id + ":done" ? " fresh" : "") + '">↑ تحسنت عن آخر مرة</span>' : "") + "</div></div>" +
         '<div class="sug"><span class="pill ' + sg.kind + '">' + KIND[sg.kind] + "</span><span>" + esc(sg.text) + "</span></div>" +
         '<div class="sets"><div class="set-head"><span>#</span><span>آخر مرة</span><span>الوزن (كغ)</span><span>العدات</span><span>تم</span></div>';
@@ -1663,7 +1689,7 @@ function viewMore() {
 function sheetFacts(id) {
   const ex = exLookup(id) || libEx.get(id), h = history(id);
   const last = h.length ? Math.max(...h[h.length - 1].sets.map(s => s.w)) : null, best = h.length ? Math.max(...h.flatMap(x => x.sets.map(s => s.w))) : null;
-  let out = '<div class="factrow"><div class="fact"><b class="num">' + (ex ? ex.sets + "×" + ex.min + "–" + ex.max : "—") + '</b><span>جولات × عدات</span></div><div class="fact"><b><span class="num">' + ((S.plan && S.plan.rest) || 90) + '</span> ث</b><span>الراحة</span></div>' +
+  let out = '<div class="factrow"><div class="fact"><b class="num">' + (ex ? ex.sets + "×" + rng(ex) : "—") + '</b><span>جولات × عدات</span></div><div class="fact"><b><span class="num">' + ((S.plan && S.plan.rest) || 90) + '</span> ث</b><span>الراحة</span></div>' +
     '<div class="fact"><b>' + (last != null ? '<span class="num">' + fmt(last) + "</span> كغ" : "—") + "</b><span>" + (best != null && best > last ? "آخر وزن · أفضل " + fmt(best) : "آخر وزن") + "</span></div></div>";
   const pts = seriesFor(id, "top");
   if (pts.length > 1) out += '<div style="overflow-x:auto">' + chart(pts.slice(-12), "كغ") + "</div>";
@@ -1922,7 +1948,7 @@ document.addEventListener("click", async e => {
     case "cf": S.cardio[b.dataset.k] = b.dataset.v; renderOverlay(); break;
     case "cardioSave": {
       const ce = cardioEntry();
-      if (!ce.min) { toast("اكتب مدة الكارديو، أو ارجع واختر لا."); break; }
+      if (!ce.min) { toast(S.cardio.required ? "الكارديو إلزامي في هاليوم. اكتب مدته." : "اكتب مدة الكارديو، أو ارجع واختر لا."); break; }
       S.cardio = null; renderOverlay(); finish(ce); break;
     }
     case "weekStartSet": if (!S.draft && S.plan) S.draft = clone(S.plan); if (S.draft) { S.draft.weekStart = +b.dataset.v; markDirty(); render(); } break;
@@ -1979,6 +2005,15 @@ document.addEventListener("click", async e => {
     case "addSS": D.days[d].groups.push({ id: "g" + uid(), ex: [newEx(), newEx()] }); markDirty(); render(); break;
     case "addEx": D.days[d].groups.push({ id: "g" + uid(), ex: [newEx()] }); markDirty(); render(); break;
     case "addToG": D.days[d].groups[g].ex.push(newEx()); markDirty(); render(); break;
+    case "mvD": { const j = d + +b.dataset.dir; if (j >= 0 && j < D.days.length) { [D.days[d], D.days[j]] = [D.days[j], D.days[d]]; markDirty(); } render(); break; }
+    case "cardioReq": D.days[d].cardioRequired = !D.days[d].cardioRequired; markDirty(); render(); break;
+    case "addKB": {
+      if (!S.plan) break;
+      const P = clone(S.plan); if (P.days.some(x => x.id === "kb")) break;
+      P.days.splice(Math.min(1, P.days.length), 0, clone(KB_DAY));
+      try { await putPlan(P); S.draft = null; toast("انضاف يوم الكتل بيل"); } catch (x) { writeErr(x); }
+      render(); break;
+    }
     case "mvG": { const gs = D.days[d].groups, j = g + +b.dataset.dir; if (j >= 0 && j < gs.length) { [gs[g], gs[j]] = [gs[j], gs[g]]; markDirty(); } render(); break; }
     case "link": { const gs = D.days[d].groups; if (gs[g + 1]) { gs[g].ex = gs[g].ex.concat(gs[g + 1].ex); gs.splice(g + 1, 1); markDirty(); } render(); break; }
     case "unlink": { const gs = D.days[d].groups; const rest = gs[g].ex.slice(1).map(x => ({ id: "g" + uid(), ex: [x] })); gs[g].ex = gs[g].ex.slice(0, 1); gs.splice(g + 1, 0, ...rest); markDirty(); render(); break; }
